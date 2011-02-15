@@ -15,7 +15,7 @@
 #include "cinder/Cinder.h"
 #include "Easing.h"
 #include "TimeBasis.h"
-#include "Sequenceable.h"
+#include "Sequenceable.hpp"
 
 namespace cinder {
 	namespace tween {
@@ -26,36 +26,30 @@ namespace cinder {
 			Tweenable( void *data ) : mTargetVoid( data ) {}
 			virtual ~Tweenable(){};
 			
-			//! advance time in the animation to the given point
-			virtual void stepTo( double newTime ) = 0;
-			//! is the animation finished?
-			virtual bool isComplete(){return true;}
-			
 			//! change how the tween moves through time
 			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
 			
 			//! change how the tween thinks about time
 			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
-			virtual void reverse(){ setTimeFunction(TimeBasis::reverse); }
-			virtual void loop(){ setTimeFunction(TimeBasis::repeat); }
-			virtual void pingpong(){ setTimeFunction(TimeBasis::pingpong); }
+			void reverse(){ setTimeFunction(TimeBasis::reverse); }
+			void loop(){ setTimeFunction(TimeBasis::repeat); }
+			void pingpong(){ setTimeFunction(TimeBasis::pingpong); }
 						
 			//! push back the tween's start time
-			virtual void delay( float amt ){};
+			void delay( double amt ){ mStartTime += amt; }
+			//! set the tween's start time
+			void setStartTime( double time ){ mStartTime = time; }
 			
 			//! change the duration of the tween
-			void setDuration(double duration){ mDuration=duration; }
-			
-			// todo
-			virtual void pause(){};
+			void setDuration( double duration ){ mDuration = duration; }
 			
 			const void	*getTargetVoid() const { return mTargetVoid; }
 			
 		protected:
 			double	mDuration;
+			double mStartTime;
 			void	*mTargetVoid;
 			// how we interpret time
-			// might need to be a static object, so it can also handle completion
 			double (*mTimeFunction)(double start, double duration);
 			// how we move between points in time
 			double (*mEaseFunction)(double t);
@@ -73,8 +67,8 @@ namespace cinder {
 			{
 				mTarget = target;
 				mStartValue = *target;
-				mTargetValue = targetValue;
-				mChange = mTargetValue - mStartValue;
+				mEndValue = targetValue;
+				mValueDelta = mEndValue - mStartValue;
 				
 				mStartTime = startTime;
 				mDuration = duration;
@@ -90,8 +84,8 @@ namespace cinder {
 			{
 				mTarget = target;
 				mStartValue = startValue;
-				mTargetValue = targetValue;
-				mChange = mTargetValue - mStartValue;
+				mEndValue = targetValue;
+				mValueDelta = mEndValue - mStartValue;
 				
 				mStartTime = startTime;
 				mDuration = duration;
@@ -113,22 +107,21 @@ namespace cinder {
 			
 			virtual void updateTarget()
 			{
-				if( mT > 0.0 && mT < 1.0 )
+				if( ! mComplete || mT < 1.0 )
 				{
-					*mTarget = mStartValue + mChange * mEaseFunction( mT );
-				} else if ( mT == 1.0 )
-				{	// at the completion point, set to target value
-					*mTarget = mTargetValue;
-					mComplete = true;
-				} else
-				{
-					
+					if( mT > 0.0 && mT < 1.0 )
+					{
+						*mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
+						mComplete = false;
+					} else if ( mT == 1.0 )
+					{	// at the completion point, set to target value
+						*mTarget = mEndValue;
+						mComplete = true;
+					} else
+					{
+						
+					}
 				}
-			}
-			
-			void delay(float amt)
-			{
-				mStartTime += amt;
 			}
 			
 			T* getTarget(){ return mTarget; }
@@ -137,10 +130,9 @@ namespace cinder {
 			
 		private:			
 			T* mTarget;
-			T mStartValue, mChange, mTargetValue;
+			T mStartValue, mValueDelta, mEndValue;
 			
 			double mT;	// normalized time
-			double mStartTime;
 			bool mComplete;
 		};
 
