@@ -8,7 +8,6 @@
  */
 
 #include "Timeline.h"
-#include "cinder/app/App.h"
 
 using namespace cinder;
 using namespace cinder::tween;
@@ -18,21 +17,6 @@ typedef std::vector< TweenRef >::iterator t_iter;
 Timeline::Timeline()
 {
 	mCurrentTime = 0;
-}
-
-void Timeline::step()
-{	// would like to use getAverageFps, but it doesn't work statically (yet)
-	step( 1.0 / app::getFrameRate() );
-}
-
-void Timeline::step( double timestep )
-{
-	mCurrentTime += timestep;
-	
-	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
-	{
-		(**iter).stepTo( mCurrentTime );
-	}
 }
 
 void Timeline::stepTo( double time )

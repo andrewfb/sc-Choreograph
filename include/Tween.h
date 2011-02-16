@@ -23,34 +23,41 @@ namespace cinder {
 		//Non-templated base class to allow us to have a list containing all types of Tween
 		class Tweenable : public Sequenceable {
 		public:
-			Tweenable( void *data ) : mTargetVoid( data ) {}
+			Tweenable( void *data ) 
+				: mTargetVoid( data ), mComplete( false ), mNumRepeats( 0 ), mPingPong( false ), mLoop( false )
+			{}
 			virtual ~Tweenable(){};
 			
 			//! change how the tween moves through time
 			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
 			
 			//! change how the tween thinks about time
-			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
-			void reverse(){ setTimeFunction(TimeBasis::reverse); }
-			void loop(){ setTimeFunction(TimeBasis::repeat); }
-			void pingpong(){ setTimeFunction(TimeBasis::pingpong); }
+//			void reverse() { setTimeFunction(TimeBasis::reverse); }
+			void setLoop( bool loop = true ) { mLoop = loop; }
+			void setPingPong( bool pingPong = true ) { mPingPong = pingPong; }
 						
 			//! push back the tween's start time
 			void delay( double amt ){ mStartTime += amt; }
 			//! set the tween's start time
 			void setStartTime( double time ){ mStartTime = time; }
+			double getStartTime() const { return mStartTime; }
+			bool isComplete() const { return mComplete; }
 			
+			virtual double getDuration() const { return mDuration; }
 			//! change the duration of the tween
 			void setDuration( double duration ){ mDuration = duration; }
+			virtual double getCurrentTime() const { return mStartTime + mT * mDuration; }
 			
 			const void	*getTargetVoid() const { return mTargetVoid; }
 			
 		protected:
 			double	mDuration;
-			double mStartTime;
+			double	mStartTime;
 			void	*mTargetVoid;
-			// how we interpret time
-			double (*mTimeFunction)(double start, double duration);
+			double	mT;	// normalized time
+			bool	mComplete;
+			int		mNumRepeats;
+			bool	mPingPong, mLoop;
 			// how we move between points in time
 			double (*mEaseFunction)(double t);
 		};
@@ -60,9 +67,9 @@ namespace cinder {
 		//Our templated tween design
 		template<typename T>
 		class Tween : public Tweenable{
-		public:
+		  public:
 			// build a tween with a target, target value, duration, and optional ease function
-			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
 				: Tweenable( target )
 			{
 				mTarget = target;
@@ -73,13 +80,10 @@ namespace cinder {
 				mStartTime = startTime;
 				mDuration = duration;
 				mT = 0.0;
-				mComplete = false;
-				
 				mEaseFunction = easeFunction;
-				mTimeFunction = timeFunction;
 			}
 			
-			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
 				: Tweenable( target )
 			{
 				mTarget = target;
@@ -90,19 +94,42 @@ namespace cinder {
 				mStartTime = startTime;
 				mDuration = duration;
 				mT = 0.0;
-				mComplete = false;
-				
 				mEaseFunction = easeFunction;
-				mTimeFunction = timeFunction;
 			}
 			
-			~Tween<T>(){}
+			~Tween<T>() {}
 			
 			// this could be modified in the future to allow for a PathTween
 			virtual void stepTo( double newTime )
 			{
-				mT = mTimeFunction( newTime - mStartTime, mDuration );
-				updateTarget();	
+				if( mComplete )
+					return;
+
+				double delta = newTime - mStartTime;
+				if( delta <= 0 )
+					return;
+				else if( delta < mDuration ) {
+					mT = delta / mDuration;
+					*mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
+				}
+				else { // mT >= 1
+					if( mLoop ) {
+						mT = math<double>::fmod( delta, mDuration ) / mDuration;
+					}
+					else if( mPingPong ) {
+						double t2 = fmod( delta, mDuration * 2 );
+						if( t2 > mDuration )
+							mT = ((mDuration*2) - t2) / mDuration;
+						else
+							mT = t2 / mDuration;
+					}
+					else {
+						mT = 1; // all done
+						mComplete = true;
+					}
+					*mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
+				}
+//				updateTarget();	
 			}
 			
 			virtual void updateTarget()
@@ -125,15 +152,10 @@ namespace cinder {
 			}
 			
 			T* getTarget(){ return mTarget; }
-			double getStartTime(){ return mStartTime; }
-			bool isComplete(){ return mComplete; }
 			
 		private:			
 			T* mTarget;
-			T mStartValue, mValueDelta, mEndValue;
-			
-			double mT;	// normalized time
-			bool mComplete;
+			T mStartValue, mValueDelta, mEndValue;			
 		};
 
 		/*

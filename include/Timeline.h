@@ -21,32 +21,28 @@ namespace cinder {
 	namespace tween {
 			
 		class Timeline : public Sequenceable {
-		
-		public:
+		  public:
 			Timeline();			
 			//! add a tween to be managed
 			void addTween( TweenRef );
-			//! advance time based on target fps
-			void step();
-			//! advance time a specified amount
-			void step( double timestep );
+
 			//! go to a specific time
 			void stepTo( double time );
 			
 			//! create a new tween and add it to the list
 			template<typename T>
-			TweenRef add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
-				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+			TweenRef add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
 				return mTweens.back();
 			}
 			
 			//! replace an existing tween
 			template<typename T>
-			TweenRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
+			TweenRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
 				TweenRef existingTween = findTween( target );
 				if( existingTween )
 					removeTween( existingTween );
-				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
 				return mTweens.back();
 			}
 			
@@ -58,8 +54,15 @@ namespace cinder {
 			//! remove completed tweens from the timeline
 			void clearFinishedTweens();
 			//! reset time to zero
-			void reset(){ stepTo( 0.0 ); }
-		private:
+			void reset(){ stepTo( 0 ); }
+			
+			virtual bool isComplete() const { return false; } // TODO
+			
+			//! returns the duration of the sequenceable item
+			virtual double getDuration() const { return 0; } // TODO
+			
+			virtual double getCurrentTime() const { return mCurrentTime; }
+  		  private:
 			double					mCurrentTime;
 			std::vector< TweenRef > mTweens;
 		
