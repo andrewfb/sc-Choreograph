@@ -102,9 +102,6 @@ void BasicTweenApp::playRandomTween()
 
 void BasicTweenApp::tweenToMouse()
 {
-	// Reset the timeline to zero
-	mTimeline.reset();
-	
 	// Move our properties to the mouse position with with different easing
 	Vec3f mousePos = Vec3f( getMousePos().x, getMousePos().y, 0.0f );
 	// Tween a Vec3f all at once with custom easing

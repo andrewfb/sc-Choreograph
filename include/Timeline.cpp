@@ -7,12 +7,15 @@
  *
  */
 
+#include <algorithm>
 #include "Timeline.h"
 
-using namespace cinder;
-using namespace cinder::tween;
-typedef std::vector< TweenRef >::iterator t_iter;
+using namespace std;
 
+namespace cinder { namespace tween {
+
+typedef std::vector<TweenRef>::iterator t_iter;
+typedef std::vector<SequenceableRef>::iterator s_iter;
 
 Timeline::Timeline()
 {
@@ -23,29 +26,26 @@ void Timeline::stepTo( double time )
 {	
 	mCurrentTime = time;
 	
-	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
-	{
+	// iterate tweens
+	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter ) {
 		(**iter).stepTo( time );
+	}
+	
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+		(*iter)->stepTo( time );
 	}
 }
 
 void Timeline::clearTimeline()
 {
-	mTweens.clear();	
+	mTweens.clear();
+	mItems.clear();	
 }
 
-void Timeline::clearFinishedTweens()
+void Timeline::clearComplete()
 {
-	t_iter iter = mTweens.begin();
-	
-	while (iter != mTweens.end()) {		
-		if( (**iter).isComplete() )
-		{
-			iter = mTweens.erase(iter);
-		} else {
-			++iter;
-		}
-	}
+	mTweens.erase( remove_if( mTweens.begin(), mTweens.end(), Sequenceable::isSeqComplete ), mTweens.end() );
+	mItems.erase( remove_if( mItems.begin(), mItems.end(), Sequenceable::isSeqComplete ), mItems.end() );
 }
 
 void Timeline::addTween( TweenRef tween)
@@ -72,4 +72,4 @@ void Timeline::removeTween( TweenRef tween )
 		mTweens.erase( iter );
 }
 
-
+} } // namespace cinder::tween
