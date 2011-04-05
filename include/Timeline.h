@@ -55,7 +55,7 @@ class Timeline : public Sequenceable {
 	//! remove completed tweens from the timeline
 	void clearComplete();
 	//! reset time to zero
-	void reset() { stepTo( 0 ); }
+	void restart();
 	
 	virtual bool isComplete() const { return false; } // TODO
 	

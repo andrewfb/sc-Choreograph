@@ -48,6 +48,15 @@ void Timeline::clearComplete()
 	mItems.erase( remove_if( mItems.begin(), mItems.end(), Sequenceable::isSeqComplete ), mItems.end() );
 }
 
+void Timeline::restart()
+{
+	mCurrentTime = 0;
+	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
+		(*iter)->restart();
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter )
+		(*iter)->restart();	
+}
+
 void Timeline::addTween( TweenRef tween)
 {
 	mTweens.push_back( tween );

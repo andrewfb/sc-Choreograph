@@ -27,6 +27,9 @@ class Sequenceable {
 	//! is the animation finished?
 	virtual bool isComplete() const { return false; }
 	
+	//! Reset the item
+	virtual void restart() {}
+	
 	//! returns the duration of the sequenceable item
 	virtual double getDuration() const = 0;
 	

@@ -35,7 +35,9 @@ namespace cinder {
 //			void reverse() { setTimeFunction(TimeBasis::reverse); }
 			void setLoop( bool loop = true ) { mLoop = loop; }
 			void setPingPong( bool pingPong = true ) { mPingPong = pingPong; }
-						
+			
+			virtual void	restart() { mComplete = false; }
+			
 			//! push back the tween's start time
 			void delay( double amt ){ mStartTime += amt; }
 			//! set the tween's start time

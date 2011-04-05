@@ -118,7 +118,7 @@ void BasicTweenApp::keyDown( KeyEvent event )
 {
 	switch( event.getChar() ){
 		case 'r':
-			mTimeline.reset();
+			mTimeline.restart();
 			break;
 		default:
 			playRandomTween();
