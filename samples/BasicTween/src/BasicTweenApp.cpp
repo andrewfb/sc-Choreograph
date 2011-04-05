@@ -8,6 +8,28 @@ using namespace ci;
 using namespace ci::app;
 using namespace ci::tween;
 
+// Simple class to demonstrate custom lerping
+struct Box {
+	Box() : mColor( Color( 1, 0.5f, 0.25f ) ), mPos( 320, 240 ), mSize( 10, 10 ) {}
+	Box( Color color, Vec2f pos, Vec2f size )
+		: mColor( color ), mPos( pos ), mSize( size )
+	{}
+	
+	void	draw() {
+		gl::color( mColor );
+		gl::drawSolidRect( Rectf( mPos, mPos + mSize ) );
+	}
+	
+	Color	mColor;
+	Vec2f	mPos, mSize;
+};
+
+Box boxLerp( const Box &start, const Box &end, double t )
+{
+	return Box( lerp( start.mColor, end.mColor, t ), lerp( start.mPos, end.mPos, t), lerp( start.mSize, end.mSize, t ) );
+}
+
+
 class BasicTweenApp : public AppBasic {
 public:
 	void prepareSettings(Settings *settings);
@@ -15,7 +37,6 @@ public:
 	void setup();
 	void update();
 	void draw();
-	void shutdown();
 	
 	void keyDown( KeyEvent event );
 	void keyUp( KeyEvent event );
@@ -27,15 +48,15 @@ public:
 	
 	void resize( int width, int height );
 	
-	void fileDrop( FileDropEvent event );
 	void respond();
 	
-private:	
+  private:	
 	float mX, mY;
 	float mStep;
-	Vec3f mPos;
+	Vec2f mPos;
 	ColorA mColor;
 	Sequence mSequence;
+	Box		mBox;
 };
 
 void BasicTweenApp::prepareSettings(Settings *settings)
@@ -48,7 +69,7 @@ void BasicTweenApp::setup()
 {	
 	mX = getWindowWidth()/2;
 	mY = getWindowHeight()/2;
-	mPos = Vec3f(0,0,0);
+	mPos = Vec2f(0,0);
 	
 	mStep = 1.0 / 60.0;
 	
@@ -75,8 +96,9 @@ void BasicTweenApp::draw()
 	gl::drawSolidCircle( Vec2i( mX, mY ), 20.0f );
 	
 	gl::color(Color::white());
-	gl::drawSolidCircle( Vec2i(mPos.x, mPos.y), 15.0f );
-	
+	gl::drawSolidCircle( mPos, 15.0f );
+
+	mBox.draw();
 }
 
 void BasicTweenApp::respond()
@@ -100,16 +122,22 @@ void BasicTweenApp::playRandomTween()
 	// Reset the timeline to zero
 	mSequence.reset();
 	
-	// Tween a Vec3f
-	Vec3f randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
+	// Tween a Vec2f
+	Vec2f randomPos( Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()) );
 	
 	// Create our tween
 	mSequence.add( &mPos, randomPos, 2.0 );
 	
 	// Tween our floats
-	randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
+	randomPos = Vec2f( Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()) );
 	mSequence.add( &mX, randomPos.x, 2.0 );
 	mSequence.add( &mY, randomPos.y, 2.0 );
+}
+
+Box randomBox()
+{
+	return Box( Color( Rand::randFloat(), Rand::randFloat(), Rand::randFloat() ), Vec2f( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ),
+		Vec2f( Rand::randFloat( 40 ), Rand::randFloat( 40 ) ) );
 }
 
 void BasicTweenApp::tweenToMouse()
@@ -117,15 +145,16 @@ void BasicTweenApp::tweenToMouse()
 	// Reset the timeline to zero
 	mSequence.reset();
 	
-	// Move our properties to the mouse position with with different easing
-	Vec3f mousePos = Vec3f( getMousePos().x, getMousePos().y, 0.0f );
-	// Tween a Vec3f all at once with custom easing
-	std::shared_ptr<Tween <Vec3f> > t = mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
+	Vec2f mousePos = getMousePos();
+	std::shared_ptr<Tween <Vec2f> > t = mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
 	t->delay( 0.5f );
-	
+
 	// Tween our floats
 	mSequence.replace( &mX, mousePos.x, 2.0, Back::easeInOut );
 	mSequence.replace( &mY, mousePos.y, 1.5, Back::easeInOut );
+	
+	// make a new random box and tween to that
+	mSequence.replace( &mBox, randomBox(), 3.0f, Back::easeInOut, boxLerp );
 }
 
 //KeyEvents
@@ -150,16 +179,6 @@ void BasicTweenApp::keyUp( KeyEvent event )
 		default:
 		break;
 	}
-}
-
-void BasicTweenApp::fileDrop( FileDropEvent event )
-{
-	
-}
-
-void BasicTweenApp::shutdown()
-{
-//	TweenManager::instance().cancelAllTweens();
 }
 
 
