@@ -24,7 +24,7 @@ namespace cinder
 			Cue( std::function<void ()> action, double atTime=0.0 );
 			~Cue();
 			void addReceiver( std::function<void ()> action );
-			void updateTarget( double relativeTime );
+			void update( double relativeTime );
 			
  		  private:
 			boost::signals2::signal<void ()> mSignal;

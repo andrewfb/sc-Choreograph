@@ -26,12 +26,17 @@ namespace cinder
 			
 			//! go to a specific time
 			void stepTo( double time );
-			virtual void updateTarget( double relativeTime ) = 0;
+			virtual void update( double relativeTime ) = 0;
 			
-			//! push back the action's start time
-			void delay( double amt ) { mStartTime += amt; }
+			double getStartTime() const { return mStartTime; }
+			double getEndTime() const { return mStartTime + mDuration; }
+			double getDuration() const { return mDuration; }			
+			
 			//! set the action's start time
 			void setStartTime( double time ) { mStartTime = time; }
+			void setDuration( double duration ) { mDuration = duration; }
+			//! push back the action's start time
+			void delay( double amt ) { mStartTime += amt; }
 			
 			//! change how time behaves
 			void reverse( bool isReversed = true ){ mReversed = isReversed; }

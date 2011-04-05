@@ -27,8 +27,9 @@ void Sequenceable::stepTo( double newTime )
 	if( newTime >= mStartTime + mDuration ) {
 		mComplete = true;
 	}
-	
-	updateTarget( relTime );	
+	else if( newTime >= mStartTime ) {
+		update( relTime );
+	}
 }
 			
 } } // namespace cinder::tween

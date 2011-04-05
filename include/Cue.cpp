@@ -31,7 +31,7 @@ namespace cinder
 			mSignal.connect( action );
 		}
 		
-		void Cue::updateTarget( double relativeTime )
+		void Cue::update( double relativeTime )
 		{
 			mSignal();
 		}

@@ -74,7 +74,7 @@ namespace cinder {
 			void clearFinishedTweens();
 			//! reset time to zero
 			void reset(){ stepTo( 0.0 ); }
-virtual void updateTarget( double relativeTime) {}			
+virtual void update( double relativeTime) {}			
 		private:
 			double					mCurrentTime;
 			std::vector< SeqRef >	mActions;

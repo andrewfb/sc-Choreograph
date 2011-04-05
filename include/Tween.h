@@ -28,7 +28,6 @@ namespace cinder {
 		  protected:
 			double	(*mEaseFunction)(double t);
 			double	mDuration;
-			bool	mComplete;
 		};
 		
 		template<typename T>
@@ -43,40 +42,24 @@ namespace cinder {
 			Tween( T *target, T startValue, T endValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
 				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue )
 			{
-				mStartTime = startTime;
-				mDuration = duration;
-				mComplete = false;
-				
-				mEaseFunction = easeFunction;
 			}
 			
 			~Tween() {}
 			
 			// this could be modified in the future to allow for a PathTween
-			virtual void updateTarget( double relativeTime )
+			virtual void update( double relativeTime )
 			{
-				if( relativeTime > 0 && relativeTime < 1 ) {
-					*reinterpret_cast<T*>(mTarget) = mStartValue + ( mEndValue - mStartValue ) * mEaseFunction( relativeTime );
-				}
-				else if( relativeTime == 1 ) {	// at the completion point, set to target value
-					*reinterpret_cast<T*>(mTarget) = mEndValue;
-					mComplete = true;
-				}
+				*reinterpret_cast<T*>(mTarget) = mStartValue + ( mEndValue - mStartValue ) * mEaseFunction( relativeTime );
 			}
 			
 			//! change how the tween moves through time
 			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
-			//! change the duration of the tween
-			void setDuration( double duration ){ mDuration = duration; }
-			//! returns the duration of the sequenceable item
-			double getDuration(){ return mDuration; }
+
+			T	getStartValue() const { return mStartValue; }
+			T	getEndValue() const { return mEndValue; }			
+			T*	getTarget() const { return reinterpret_cast<T*>( mTarget ); }
 			
-			T*		getTarget() const { return mTarget; }
-			double	getStartTime() const { return mStartTime; }
-			double	getEndValue() const { return mEndValue; }			
-			bool	isComplete() const { return mComplete; }
-			
-		private:
+		  protected:
 			T	mStartValue, mEndValue;	
 		};
 	} //tween
