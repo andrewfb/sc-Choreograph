@@ -19,17 +19,15 @@ namespace cinder
 	namespace tween
 	{
 		class Cue : public Sequenceable
-		{
-		public:
+  		{
+		  public:
 			Cue( std::function<void ()> action, double atTime=0.0 );
 			~Cue();
 			void addReceiver( std::function<void ()> action );
-			void stepTo( double time );
+			void updateTarget( double relativeTime );
 			
-		private:
+ 		  private:
 			boost::signals2::signal<void ()> mSignal;
-			double mTime;
-			double mLastTime;
 		};
 		
 		typedef boost::shared_ptr<Cue> CueRef;

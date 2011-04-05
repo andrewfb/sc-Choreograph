@@ -23,7 +23,7 @@ namespace cinder {
 			
 		class Sequence : public Sequenceable {
 		
-		public:
+		  public:
 			Sequence();			
 			//! add an action to the sequence
 			void add( SeqRef );
@@ -43,25 +43,25 @@ namespace cinder {
 			
 			//! create a new tween and add it to the list
 			template<typename T>
-			std::shared_ptr< Tween<T> > add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
-				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
+			std::shared_ptr< Tween<T> > add( T *target, T endValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+				mActions.push_back( SeqRef( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction ) ) );
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
 			//! create a new tween
 			template<typename T>
-			std::shared_ptr< Tween<T> > add( T *target, T startValue, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
-				mActions.push_back( SeqRef( new Tween<T>( target, startValue, targetValue, mCurrentTime, duration, easeFunction ) ) );
+			std::shared_ptr< Tween<T> > add( T *target, T startValue, T endValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+				mActions.push_back( SeqRef( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction ) ) );
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
 			//! replace an existing tween
 			template<typename T>
-			std::shared_ptr< Tween<T> > replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+			std::shared_ptr< Tween<T> > replace( T *target, T endValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
 				SeqRef existingAction = find( target );
 				if( existingAction )
 					remove( existingAction );
-				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
+				mActions.push_back( SeqRef( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction ) ) );
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
@@ -74,6 +74,7 @@ namespace cinder {
 			void clearFinishedTweens();
 			//! reset time to zero
 			void reset(){ stepTo( 0.0 ); }
+virtual void updateTarget( double relativeTime) {}			
 		private:
 			double					mCurrentTime;
 			std::vector< SeqRef >	mActions;

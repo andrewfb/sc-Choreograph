@@ -72,7 +72,7 @@ SeqRef Sequence::find( void *target )
 {
 	s_iter iter = mActions.begin();
 	while( iter != mActions.end() ) {
-		if( (*iter)->getTargetVoid() == target )
+		if( (*iter)->getTarget() == target )
 			return *iter;
 		++iter;
 	}

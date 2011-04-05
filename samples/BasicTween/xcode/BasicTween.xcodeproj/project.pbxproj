@@ -17,6 +17,8 @@
 		00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 00CCAF14116A9FEE008396D5 /* CinderApp.icns */; };
 		1507352911AF3F810044CD4E /* Sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1507352811AF3F810044CD4E /* Sequence.cpp */; };
 		1547BE7D131781C8002DCCEA /* Cue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1547BE7C131781C8002DCCEA /* Cue.cpp */; };
+		4354B76B134B99F700120EE3 /* Sequenceable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354B76A134B99F700120EE3 /* Sequenceable.cpp */; };
+		4354B78E134BB49000120EE3 /* Tween.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 4354B78D134BB49000120EE3 /* Tween.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
@@ -46,6 +48,8 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* BasicTween_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicTween_Prefix.pch; sourceTree = "<group>"; };
+		4354B76A134B99F700120EE3 /* Sequenceable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sequenceable.cpp; sourceTree = "<group>"; };
+		4354B78D134BB49000120EE3 /* Tween.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tween.cpp; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -128,6 +132,7 @@
 		1518EA1F11ADB025002C8C6A /* include */ = {
 			isa = PBXGroup;
 			children = (
+				4354B78D134BB49000120EE3 /* Tween.cpp */,
 				150736A111AF65340044CD4E /* Choreograph.h */,
 				1507352611AF3F740044CD4E /* Sequence.h */,
 				1507352811AF3F810044CD4E /* Sequence.cpp */,
@@ -137,6 +142,7 @@
 				15EA50CA11D08C6A00A5B89E /* TimeBasis.h */,
 				1547BE7B131781C8002DCCEA /* Cue.h */,
 				1547BE7C131781C8002DCCEA /* Cue.cpp */,
+				4354B76A134B99F700120EE3 /* Sequenceable.cpp */,
 			);
 			name = include;
 			path = ../../../include;
@@ -253,6 +259,8 @@
 				00BAE65A0E7ED9C10018A608 /* BasicTweenApp.cpp in Sources */,
 				1507352911AF3F810044CD4E /* Sequence.cpp in Sources */,
 				1547BE7D131781C8002DCCEA /* Cue.cpp in Sources */,
+				4354B76B134B99F700120EE3 /* Sequenceable.cpp in Sources */,
+				4354B78E134BB49000120EE3 /* Tween.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

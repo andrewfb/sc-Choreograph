@@ -18,42 +18,38 @@ namespace cinder
 		class Sequenceable
 		{
 		public:
-			Sequenceable( void *data=0 ):
-			mTargetVoid( data ),
-			mReversed(false)
-			{}
-			virtual ~Sequenceable(){};
+			Sequenceable( void *target, double startTime, double duration );
+			Sequenceable() : mTarget( 0 ), mDuration( 0 ) {}
+			virtual ~Sequenceable() {}
 			
-			const void	*getTargetVoid() const { return mTargetVoid; }
+			const void	*getTarget() const { return mTarget; }
 			
-			//! advance time a specified amount
-			virtual void step( double timestep ){};
 			//! go to a specific time
-			virtual void stepTo( double time ) = 0;
+			void stepTo( double time );
+			virtual void updateTarget( double relativeTime ) = 0;
 			
 			//! push back the action's start time
-			void delay( double amt ){ mStartTime += amt; }
+			void delay( double amt ) { mStartTime += amt; }
 			//! set the action's start time
-			void setStartTime( double time ){ mStartTime = time; }
+			void setStartTime( double time ) { mStartTime = time; }
 			
 			//! change how time behaves
-			void reverse( bool isReversed=true ){ mReversed = isReversed; }
+			void reverse( bool isReversed = true ){ mReversed = isReversed; }
 			//! loop infinitely:-1, count:1-n
 			//void loop(){}
 			//! pinpong infinitely:-1, count:1–n
 			//void pingpong(){}
 			
 			//! is the sequenceable action finished?
-			virtual bool isComplete(){ return false; }
-		protected:
-			double mStartTime;
-			bool mReversed;
+			virtual bool isComplete() { return mComplete; }
 			
-		private:
-			void	*mTargetVoid;
+		  protected:
+			void	*mTarget;
+			double	mStartTime, mDuration;
+			bool	mComplete;
+			bool	mReversed;			
 		};
 		
 		typedef std::shared_ptr<Sequenceable> SeqRef;
 	}
 }
-

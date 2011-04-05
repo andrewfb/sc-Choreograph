@@ -15,10 +15,8 @@ namespace cinder
 	namespace tween
 	{
 		Cue::Cue( std::function<void ()> action, double atTime ):
-		Sequenceable( &action ),
-		mSignal(),
-		mTime( atTime ),
-		mLastTime( 0 )
+		Sequenceable( &action, atTime, 0 ),
+		mSignal()
 		{
 			mSignal.connect( action );
 		}
@@ -33,14 +31,9 @@ namespace cinder
 			mSignal.connect( action );
 		}
 		
-		void Cue::stepTo( double time )
+		void Cue::updateTarget( double relativeTime )
 		{
-			if ( ( time > mTime && mLastTime < mTime ) || ( mReversed && mLastTime > mTime && time < mTime ) )
-			{
-				mSignal();
-			}
-			
-			mLastTime = time;
+			mSignal();
 		}
 	}
 

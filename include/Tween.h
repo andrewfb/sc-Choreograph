@@ -20,68 +20,47 @@
 namespace cinder {
 	namespace tween {
 		//Our templated tween design
+		class TweenBase : public Sequenceable {
+		  public:
+			TweenBase( void *target, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut );
+			virtual ~TweenBase() {}
+			
+		  protected:
+			double	(*mEaseFunction)(double t);
+			double	mDuration;
+			bool	mComplete;
+		};
+		
 		template<typename T>
-		class Tween : public Sequenceable {
-		public:
+		class Tween : public TweenBase {
+		  public:
 			// build a tween with a target, target value, duration, and optional ease function
-			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
-				: Sequenceable( target )
+			Tween( T *target, T endValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
+				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue )
 			{
-				mTarget = target;
-				mStartValue = *target;
-				mEndValue = targetValue;
-				mValueDelta = mEndValue - mStartValue;
-				
+			}
+			
+			Tween( T *target, T startValue, T endValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
+				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue )
+			{
 				mStartTime = startTime;
 				mDuration = duration;
-				mT = 0.0;
 				mComplete = false;
 				
 				mEaseFunction = easeFunction;
 			}
 			
-			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
-				: Sequenceable( target )
-			{
-				mTarget = target;
-				mStartValue = startValue;
-				mEndValue = targetValue;
-				mValueDelta = mEndValue - mStartValue;
-				
-				mStartTime = startTime;
-				mDuration = duration;
-				mT = 0.0;
-				mComplete = false;
-				
-				mEaseFunction = easeFunction;
-			}
-			
-			~Tween<T>(){}
-			
-			virtual void stepTo( double newTime )
-			{
-				mT = math<double>::min( (newTime - mStartTime) / mDuration, 1 );
-				if( newTime < mStartTime + mDuration ){ mComplete = false; }
-				
-				updateTarget();	
-			}
+			~Tween() {}
 			
 			// this could be modified in the future to allow for a PathTween
-			virtual void updateTarget()
+			virtual void updateTarget( double relativeTime )
 			{
-				if( ! mComplete )
-				{
-					if( mT > 0.0 && mT < 1.0 )
-					{
-						*mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
-					} else if ( mT == 1.0 )
-					{	// at the completion point, set to target value
-						*mTarget = mEndValue;
-						mComplete = true;
-					} else
-					{
-						
-					}
+				if( relativeTime > 0 && relativeTime < 1 ) {
+					*reinterpret_cast<T*>(mTarget) = mStartValue + ( mEndValue - mStartValue ) * mEaseFunction( relativeTime );
+				}
+				else if( relativeTime == 1 ) {	// at the completion point, set to target value
+					*reinterpret_cast<T*>(mTarget) = mEndValue;
+					mComplete = true;
 				}
 			}
 			
@@ -92,18 +71,13 @@ namespace cinder {
 			//! returns the duration of the sequenceable item
 			double getDuration(){ return mDuration; }
 			
-			T* getTarget(){ return mTarget; }
-			double getStartTime(){ return mStartTime; }
-			bool isComplete(){ return mComplete; }
+			T*		getTarget() const { return mTarget; }
+			double	getStartTime() const { return mStartTime; }
+			double	getEndValue() const { return mEndValue; }			
+			bool	isComplete() const { return mComplete; }
 			
-		private:			
-			T* mTarget;
-			T mStartValue, mValueDelta, mEndValue;
-			
-			double (*mEaseFunction)(double t);
-			double	mDuration;
-			double mT;	// normalized time
-			bool mComplete;
+		private:
+			T	mStartValue, mEndValue;	
 		};
 	} //tween
 } //cinder
