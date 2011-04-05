@@ -20,6 +20,8 @@
 
 namespace cinder {
 	namespace tween {
+		typedef double(*EaseFunction)( double );
+		
 		template<typename T>
 		T lerp( const T &start, const T &end, double time )
 		{
@@ -29,29 +31,35 @@ namespace cinder {
 		//Our templated tween design
 		class TweenBase : public Sequenceable {
 		  public:
-			TweenBase( void *target, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut );
+			TweenBase( void *target, double startTime, double duration, EaseFunction easeFunction = Quadratic::easeInOut );
 			virtual ~TweenBase() {}
+
+			//! change how the tween moves through time
+			void setEaseFunction( EaseFunction easeFunction ) { mEaseFunction = easeFunction; }
+			EaseFunction	getEaseFunction() const { return mEaseFunction; }
 			
 		  protected:
-			double	(*mEaseFunction)(double t);
-			double	mDuration;
+			EaseFunction	mEaseFunction;
+			double			mDuration;
 		};
+		
+		typedef std::shared_ptr<TweenBase>		TweenRef;
 		
 		template<typename T>
 		class Tween : public TweenBase {
 		  public:
-			typedef std::function<T (const T&, const T&, double)>	UpdateFunc;
-		  
+			typedef std::function<T (const T&, const T&, double)>	LerpFunction;
+
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween( T *target, T endValue, double startTime, double duration,
-					double (*easeFunction)(double t)=Quadratic::easeInOut, UpdateFunc updateFunction = &lerp<T> )
-				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mUpdateFunction( updateFunction )
+					EaseFunction easeFunction = Quadratic::easeInOut, LerpFunction lerpFunction = &lerp<T> )
+				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
 			
 			Tween( T *target, T startValue, T endValue, double startTime, double duration,
-					double (*easeFunction)(double t)=Quadratic::easeInOut, UpdateFunc updateFunction = &lerp<T> )
-				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mUpdateFunction( updateFunction )
+					EaseFunction easeFunction = Quadratic::easeInOut, LerpFunction lerpFunction = &lerp<T> )
+				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
 			
@@ -60,12 +68,9 @@ namespace cinder {
 			// this could be modified in the future to allow for a PathTween
 			virtual void update( double relativeTime )
 			{
-				*reinterpret_cast<T*>(mTarget) = mUpdateFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
+				*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 			}
 			
-			//! change how the tween moves through time
-			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
-
 			T	getStartValue() const { return mStartValue; }
 			T	getEndValue() const { return mEndValue; }			
 			T*	getTarget() const { return reinterpret_cast<T*>( mTarget ); }
@@ -73,7 +78,7 @@ namespace cinder {
 		  protected:
 			T	mStartValue, mEndValue;	
 			
-			UpdateFunc	mUpdateFunction;
+			LerpFunction	mLerpFunction;
 		};
 	} //tween
 } //cinder
