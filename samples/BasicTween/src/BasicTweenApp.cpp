@@ -142,9 +142,6 @@ Box randomBox()
 
 void BasicTweenApp::tweenToMouse()
 {
-	// Reset the timeline to zero
-	mSequence.reset();
-	
 	Vec2f mousePos = getMousePos();
 	std::shared_ptr<Tween <Vec2f> > t = mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
 	t->delay( 0.5f );
