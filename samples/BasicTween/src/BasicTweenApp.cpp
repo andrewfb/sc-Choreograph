@@ -170,16 +170,42 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 console() << mSequence.getNumTweens() << "tweens" << std::endl;
 }
 
+void cb( float *f )
+{
+}
+
+void benchmark()
+{
+	Timer tm;
+	Sequence tln;
+	const int totalFloats = 200;
+	float tempFloat[totalFloats];
+	for( size_t f = 0; f < totalFloats; ++f ) {
+		tempFloat[f] = 0;
+		TweenRef<float> twn = tln.add( &tempFloat[f], 10.0f, 1 );
+//		twn->addUpdateSlot( cb );
+	}
+	tm.start();
+		for( size_t t = 0; t < 1000000; ++t ) {
+			tln.step( 1 / (float)1000000 );
+		}
+	tm.stop();
+	console() << "Total time: " << tm.getSeconds() << std::endl;
+}
+
 //KeyEvents
 void BasicTweenApp::keyDown( KeyEvent event )
 {
 	switch( event.getChar() ){
 		case 'r':
 			mSequence.reset();
-			break;
+		break;
 		case 't':
 			mStep *= -1;
-			break;
+		break;
+		case 'b':
+			benchmark();
+		break;
 		default:
 			playRandomTween();
 		break;
