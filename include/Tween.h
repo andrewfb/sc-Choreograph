@@ -45,9 +45,7 @@ namespace cinder {
 			EaseFunction						mEaseFunction;
 			double								mDuration;
 		};
-		
-		typedef std::shared_ptr<TweenBase>		TweenRef;
-		
+				
 		template<typename T>
 		class Tween : public TweenBase {
 		  public:
@@ -67,7 +65,7 @@ namespace cinder {
 			{
 			}
 			
-			~Tween() {}
+			virtual ~Tween() {}
 			
 			boost::signals2::connection		addUpdateSlot( std::function<void (T*)> updateSlot ) {
 				return mUpdateSignal.connect( updateSlot );
@@ -90,5 +88,15 @@ namespace cinder {
 			LerpFunction	mLerpFunction;
 			UpdateSignal	mUpdateSignal;
 		};
+		
+		template<typename T = void*>
+		class TweenRef : public std::shared_ptr<Tween<T> > {
+		  public:
+			TweenRef( const std::shared_ptr< Tween<T> > &sp )
+				: std::shared_ptr<Tween<T> >( sp )
+			{}
+		};
+
+		
 	} //tween
 } //cinder
