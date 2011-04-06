@@ -14,7 +14,7 @@
 
 namespace cinder { namespace tween {
 
-TweenBase::TweenBase( void *target, double startTime, double duration, EaseFunction easeFunction )
+TweenBase::TweenBase( void *target, double startTime, double duration, EaseFn easeFunction )
 	: Sequenceable( target, startTime, duration ), mEaseFunction( easeFunction )
 {
 }
