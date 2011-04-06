@@ -22,11 +22,12 @@ namespace cinder
 			Sequenceable() : mTarget( 0 ), mDuration( 0 ) {}
 			virtual ~Sequenceable() {}
 			
-			const void	*getTarget() const { return mTarget; }
+			void *getTarget() const { return mTarget; }
 			
 			//! go to a specific time
 			void stepTo( double time );
 			virtual void update( double relativeTime ) = 0;
+			virtual void complete() = 0;
 			
 			double getStartTime() const { return mStartTime; }
 			double getEndTime() const { return mStartTime + mDuration; }

@@ -24,7 +24,9 @@ namespace cinder
 			Cue( std::function<void ()> action, double atTime=0.0 );
 			~Cue();
 			void addReceiver( std::function<void ()> action );
-			void update( double relativeTime );
+			virtual void update( double relativeTime );
+			
+			virtual void complete() {} // completion is a no-op for Cues
 			
  		  private:
 			boost::signals2::signal<void ()> mSignal;

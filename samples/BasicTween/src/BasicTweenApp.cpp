@@ -142,7 +142,12 @@ Box randomBox()
 
 void printBox( Box *box )
 {
-	console() << "Box is now at: " << box->mPos << std::endl;
+	console() << box->mPos;
+}
+
+void boxDone( Box *box )
+{
+	console() << std::endl << "Box is done." << std::endl;
 }
 
 void BasicTweenApp::tweenToMouse()
@@ -156,8 +161,11 @@ void BasicTweenApp::tweenToMouse()
 	mSequence.replace( &mY, mousePos.y, 1.5, Back::easeInOut );
 	
 	// make a new random box and tween to that
-	TweenRef<Box> boxTween = mSequence.replace( &mBox, randomBox(), 3.0f, Back::easeInOut, boxLerp );
+	TweenRef<Box> boxTween = mSequence.replace( &mBox, randomBox(), 3.0, Back::easeInOut, boxLerp );
 	boxTween->addUpdateSlot( printBox );
+	boxTween->setCompletionFn( boxDone );
+	
+console() << mSequence.getNumTweens() << "tweens" << std::endl;
 }
 
 //KeyEvents

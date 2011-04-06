@@ -50,6 +50,7 @@ namespace cinder {
 		class Tween : public TweenBase {
 		  public:
 			typedef std::function<T (const T&, const T&, double)>	LerpFunction;
+			typedef std::function<void (T*)>						CompletionFunction;
 			typedef boost::signals2::signal<void (T*)>				UpdateSignal;
 
 			// build a tween with a target, target value, duration, and optional ease function
@@ -70,13 +71,22 @@ namespace cinder {
 			boost::signals2::connection		addUpdateSlot( std::function<void (T*)> updateSlot ) {
 				return mUpdateSignal.connect( updateSlot );
 			}
-			
+						
 			// this could be modified in the future to allow for a PathTween
 			virtual void update( double relativeTime )
 			{
 				*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 				mUpdateSignal( reinterpret_cast<T*>(mTarget) );
 			}
+
+			virtual void complete()
+			{
+				if( mCompletionFunction )
+					mCompletionFunction( reinterpret_cast<T*>(mTarget) );
+			}
+
+			void	setCompletionFn( CompletionFunction completionFunction ) { mCompletionFunction = completionFunction; }
+			CompletionFunction	getCompletionFn () const { return mCompletionFunction; }
 			
 			T	getStartValue() const { return mStartValue; }
 			T	getEndValue() const { return mEndValue; }			
@@ -85,8 +95,9 @@ namespace cinder {
 		  protected:
 			T	mStartValue, mEndValue;	
 			
-			LerpFunction	mLerpFunction;
-			UpdateSignal	mUpdateSignal;
+			LerpFunction		mLerpFunction;
+			CompletionFunction	mCompletionFunction;
+			UpdateSignal		mUpdateSignal;
 		};
 		
 		template<typename T = void*>

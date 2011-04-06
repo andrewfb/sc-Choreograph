@@ -26,10 +26,14 @@ void Sequenceable::stepTo( double newTime )
 	double relTime = math<double>::min( (newTime - mStartTime) / mDuration, 1 );
 	if( newTime >= mStartTime + mDuration ) {
 		mComplete = true;
+		update( relTime );		
 	}
 	else if( newTime >= mStartTime ) {
 		update( relTime );
 	}
+	
+	if( mComplete )
+		complete();
 }
 			
 } } // namespace cinder::tween
