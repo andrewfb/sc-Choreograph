@@ -19,7 +19,7 @@
 #include "cinder/CinderMath.h"
 #include "cinder/Function.h"
 
-#include <boost/signals2.hpp>
+//#include <boost/signals2.hpp>
 
 namespace cinder {
 	namespace tween {
@@ -51,7 +51,8 @@ namespace cinder {
 		  public:
 			typedef std::function<T (const T&, const T&, double)>	LerpFn;
 			typedef std::function<void (T*)>						CompletionFn;
-			typedef boost::signals2::signal<void (T*)>				UpdateSignal;
+			//typedef boost::signals2::signal<void (T*)>				UpdateSignal;
+			typedef std::function<void (T*)>						UpdateFn;
 
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween( T *target, T endValue, double startTime, double duration,
@@ -68,15 +69,16 @@ namespace cinder {
 			
 			virtual ~Tween() {}
 			
-			boost::signals2::connection		addUpdateSlot( std::function<void (T*)> updateSlot ) {
-				return mUpdateSignal.connect( updateSlot );
+			void setUpdateFn( std::function<void (T*)> updateFn ) {
+				mUpdateFunction = updateFn;
 			}
 						
 			// this could be modified in the future to allow for a PathTween
 			virtual void update( double relativeTime )
 			{
 				*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
-				mUpdateSignal( reinterpret_cast<T*>(mTarget) );
+				if( mUpdateFunction )
+					mUpdateFunction( reinterpret_cast<T*>(mTarget) );
 			}
 
 			virtual void complete()
@@ -97,7 +99,8 @@ namespace cinder {
 			
 			LerpFn				mLerpFunction;
 			CompletionFn		mCompletionFunction;
-			UpdateSignal		mUpdateSignal;
+			UpdateFn			mUpdateFunction;
+//			UpdateSignal		mUpdateSignal;
 		};
 		
 		template<typename T = void*>

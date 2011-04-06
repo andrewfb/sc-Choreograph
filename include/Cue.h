@@ -11,7 +11,7 @@
 
 #include "Sequenceable.hpp"
 #include "cinder/Function.h"
-#include <boost/signals2.hpp>
+//#include <boost/signals2.hpp>
 
 namespace cinder
 {
@@ -29,7 +29,7 @@ namespace cinder
 			virtual void complete() {} // completion is a no-op for Cues
 			
  		  private:
-			boost::signals2::signal<void ()> mSignal;
+//			boost::signals2::signal<void ()> mSignal;
 		};
 		
 		typedef boost::shared_ptr<Cue> CueRef;

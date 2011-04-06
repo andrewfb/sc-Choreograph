@@ -76,7 +76,7 @@ void BasicTweenApp::setup()
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
-	mSequence.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
+//	mSequence.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
 	
 }
 
@@ -163,11 +163,34 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 	
 	// make a new random box and tween to that
 	TweenRef<Box> boxTween = mSequence.replace( &mBox, randomBox(), 3.0, Quadratic::easeInOut, boxLerp );
-	boxTween->addUpdateSlot( printBox );
+	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );
 	boxTween->setAutoRemove();
 	
 console() << mSequence.getNumTweens() << "tweens" << std::endl;
+}
+
+void cb( float *f )
+{
+}
+
+void benchmark()
+{
+	Timer tm;
+	Sequence tln;
+	const int totalFloats = 200;
+	float tempFloat[totalFloats];
+	for( size_t f = 0; f < totalFloats; ++f ) {
+		tempFloat[f] = 0;
+		TweenRef<float> twn = tln.add( &tempFloat[f], 10.0f, 1 );
+		twn->setUpdateFn( cb );
+	}
+	tm.start();
+		for( size_t t = 0; t < 1000000; ++t ) {
+			tln.step( 1 / (float)1000000 );
+		}
+	tm.stop();
+	console() << "Total time: " << tm.getSeconds() << std::endl;
 }
 
 //KeyEvents
@@ -176,10 +199,13 @@ void BasicTweenApp::keyDown( KeyEvent event )
 	switch( event.getChar() ){
 		case 'r':
 			mSequence.reset();
-			break;
+		break;
 		case 't':
 			mStep *= -1;
-			break;
+		break;
+		case 'b':
+			benchmark();
+		break;
 		default:
 			playRandomTween();
 		break;
