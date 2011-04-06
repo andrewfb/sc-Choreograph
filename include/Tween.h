@@ -12,11 +12,14 @@
 
 #pragma once
 
+#include "Easing.h"
+#include "Sequenceable.hpp"
+
 #include "cinder/Cinder.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Function.h"
-#include "Easing.h"
-#include "Sequenceable.hpp"
+
+#include <boost/signals2.hpp>
 
 namespace cinder {
 	namespace tween {
@@ -39,8 +42,8 @@ namespace cinder {
 			EaseFunction	getEaseFunction() const { return mEaseFunction; }
 			
 		  protected:
-			EaseFunction	mEaseFunction;
-			double			mDuration;
+			EaseFunction						mEaseFunction;
+			double								mDuration;
 		};
 		
 		typedef std::shared_ptr<TweenBase>		TweenRef;
@@ -49,6 +52,7 @@ namespace cinder {
 		class Tween : public TweenBase {
 		  public:
 			typedef std::function<T (const T&, const T&, double)>	LerpFunction;
+			typedef boost::signals2::signal<void (T*)>				UpdateSignal;
 
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween( T *target, T endValue, double startTime, double duration,
@@ -65,10 +69,15 @@ namespace cinder {
 			
 			~Tween() {}
 			
+			boost::signals2::connection		addUpdateSlot( std::function<void (T*)> updateSlot ) {
+				return mUpdateSignal.connect( updateSlot );
+			}
+			
 			// this could be modified in the future to allow for a PathTween
 			virtual void update( double relativeTime )
 			{
 				*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
+				mUpdateSignal( reinterpret_cast<T*>(mTarget) );
 			}
 			
 			T	getStartValue() const { return mStartValue; }
@@ -79,6 +88,7 @@ namespace cinder {
 			T	mStartValue, mEndValue;	
 			
 			LerpFunction	mLerpFunction;
+			UpdateSignal	mUpdateSignal;
 		};
 	} //tween
 } //cinder

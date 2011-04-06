@@ -140,10 +140,15 @@ Box randomBox()
 		Vec2f( Rand::randFloat( 40 ), Rand::randFloat( 40 ) ) );
 }
 
+void printBox( Box *box )
+{
+	console() << "Box is now at: " << box->mPos << std::endl;
+}
+
 void BasicTweenApp::tweenToMouse()
 {
 	Vec2f mousePos = getMousePos();
-	std::shared_ptr<Tween <Vec2f> > t = mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
+	shared_ptr<Tween<Vec2f> > t = mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
 	t->delay( 0.5f );
 
 	// Tween our floats
@@ -151,7 +156,8 @@ void BasicTweenApp::tweenToMouse()
 	mSequence.replace( &mY, mousePos.y, 1.5, Back::easeInOut );
 	
 	// make a new random box and tween to that
-	mSequence.replace( &mBox, randomBox(), 3.0f, Back::easeInOut, boxLerp );
+	shared_ptr<Tween<Box> > boxTween = mSequence.replace( &mBox, randomBox(), 3.0f, Back::easeInOut, boxLerp );
+	boxTween->addUpdateSlot( printBox );
 }
 
 //KeyEvents
