@@ -8,7 +8,6 @@
  */
 
 #include "Sequence.h"
-#include "cinder/app/App.h"
 
 using namespace cinder;
 using namespace cinder::tween;
@@ -19,28 +18,23 @@ Sequence::Sequence()
 	mCurrentTime = 0;
 }
 
-void Sequence::step()
-{	// would like to use getAverageFps, but it doesn't work statically (yet)
-	step( 1.0 / app::getFrameRate() );
-}
-
 void Sequence::step( double timestep )
 {
 	mCurrentTime += timestep;
-	
-	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter )
-	{
-		(**iter).stepTo( mCurrentTime );
-	}
+	stepTo( mCurrentTime );
 }
 
-void Sequence::stepTo( double time )
+void Sequence::stepTo( double absoluteTime )
 {	
-	mCurrentTime = time;
+	mCurrentTime = absoluteTime;
 	
-	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter )
+	for( s_iter iter = mActions.begin(); iter != mActions.end(); )
 	{
-		(**iter).stepTo( time );
+		(**iter).stepTo( mCurrentTime );
+		if( (**iter).isComplete() && (**iter).isAutoRemove() )
+			iter = mActions.erase( iter );
+		else
+			++iter;
 	}
 }
 
@@ -49,7 +43,7 @@ void Sequence::clearSequence()
 	mActions.clear();	
 }
 
-void Sequence::clearFinishedTweens()
+void Sequence::clearCompletedTweens()
 {
 	s_iter iter = mActions.begin();
 	

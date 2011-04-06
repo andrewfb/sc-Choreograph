@@ -27,12 +27,10 @@ namespace cinder {
 			Sequence();			
 			//! add an action to the sequence
 			void add( SeqRef );
-			//! advance time based on target fps
-			void step();
 			//! advance time a specified amount
 			void step( double timestep );
 			//! go to a specific time
-			void stepTo( double time );
+			void stepTo( double absoluteTime );
 			
 			//! add a cue to the Sequence
 			SeqRef add( std::function<void ()> action, double atTime )
@@ -71,7 +69,7 @@ namespace cinder {
 			//! remove all tweens from the Sequence
 			void clearSequence();
 			//! remove completed tweens from the Sequence
-			void clearFinishedTweens();
+			void clearCompletedTweens();
 			//! reset time to zero
 			void reset(){ stepTo( 0.0 ); }
 virtual void update( double relativeTime) {}

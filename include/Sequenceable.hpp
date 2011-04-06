@@ -19,7 +19,7 @@ namespace cinder
 		{
 		public:
 			Sequenceable( void *target, double startTime, double duration );
-			Sequenceable() : mTarget( 0 ), mDuration( 0 ) {}
+			Sequenceable() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( false ) {}
 			virtual ~Sequenceable() {}
 			
 			void *getTarget() const { return mTarget; }
@@ -49,11 +49,15 @@ namespace cinder
 			//! is the sequenceable action finished?
 			virtual bool isComplete() { return mComplete; }
 			
+			bool	isAutoRemove() const { return mAutoRemove; }
+			bool	setAutoRemove( bool autoRemove = true ) { mAutoRemove = autoRemove; }
+			
 		  protected:
 			void	*mTarget;
 			double	mStartTime, mDuration;
 			bool	mComplete;
-			bool	mReversed;			
+			bool	mReversed;
+			bool	mAutoRemove;
 		};
 		
 		typedef std::shared_ptr<Sequenceable> SeqRef;
