@@ -23,10 +23,10 @@
 
 namespace cinder {
 	namespace tween {
-		typedef double(*EaseFn)( double );
+		typedef float(*EaseFn)( float );
 		
 		template<typename T>
-		T lerp( const T &start, const T &end, double time )
+		T lerp( const T &start, const T &end, float time )
 		{
 			return start * ( 1 - time ) + end * time;
 		}
@@ -34,7 +34,7 @@ namespace cinder {
 		//Our templated tween design
 		class TweenBase : public Sequenceable {
 		  public:
-			TweenBase( void *target, double startTime, double duration, EaseFn easeFunction = Quadratic::easeInOut );
+			TweenBase( void *target, float startTime, float duration, EaseFn easeFunction = Quadratic::easeInOut );
 			virtual ~TweenBase() {}
 
 			//! change how the tween moves through time
@@ -43,25 +43,25 @@ namespace cinder {
 			
 		  protected:
 			EaseFn		mEaseFunction;
-			double		mDuration;
+			float		mDuration;
 		};
 				
 		template<typename T>
 		class Tween : public TweenBase {
 		  public:
-			typedef std::function<T (const T&, const T&, double)>	LerpFn;
+			typedef std::function<T (const T&, const T&, float)>	LerpFn;
 			typedef std::function<void (T*)>						CompletionFn;
 			//typedef boost::signals2::signal<void (T*)>				UpdateSignal;
 			typedef std::function<void (T*)>						UpdateFn;
 
 			// build a tween with a target, target value, duration, and optional ease function
-			Tween( T *target, T endValue, double startTime, double duration,
+			Tween( T *target, T endValue, float startTime, float duration,
 					EaseFn easeFunction = Quadratic::easeInOut, LerpFn lerpFunction = &lerp<T> )
 				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
 			
-			Tween( T *target, T startValue, T endValue, double startTime, double duration,
+			Tween( T *target, T startValue, T endValue, float startTime, float duration,
 					EaseFn easeFunction = Quadratic::easeInOut, LerpFn lerpFunction = &lerp<T> )
 				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
@@ -74,7 +74,7 @@ namespace cinder {
 			}
 						
 			// this could be modified in the future to allow for a PathTween
-			virtual void update( double relativeTime )
+			virtual void update( float relativeTime )
 			{
 				*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 				if( mUpdateFunction )

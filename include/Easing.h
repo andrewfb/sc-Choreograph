@@ -27,7 +27,7 @@ namespace cinder {
 		
 		struct Linear
 		{
-			static double noEase( double t )
+			static float noEase( float t )
 			{
 				return t;
 			}
@@ -35,36 +35,36 @@ namespace cinder {
 		
 		struct Quadratic
 		{
-			static double easeIn( double t )
+			static float easeIn( float t )
 			{
 				return t * t;
 			}
-			static double easeOut( double t )
+			static float easeOut( float t )
 			{ 
 				return - t * (t-2);
 			}
-			static double easeInOut( double t )
+			static float easeInOut( float t )
 			{
 				t *= 2;
-				if (t < 1) return 0.5 * t * t;
+				if (t < 1) return 0.5f * t * t;
 				
 				t -= 1;
-				return -0.5 * ((t)*(t-2) -1);
+				return -0.5f * ((t)*(t-2) -1);
 			}
 		};
 		
 		// Cubic
 		struct Cubic
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return pow(t, 3.0);
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				return pow(t - 1.0, 3.0) + 1.0;
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				t /= 0.5;
 				if (t < 1.0)
@@ -76,15 +76,15 @@ namespace cinder {
 		// Quartic
 		struct Quart
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return pow(t, 4.0);
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				return -pow(t - 1.0, 4.0) - 1.0;
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				t /= 0.5;
 				if (t < 1.0)
@@ -97,15 +97,15 @@ namespace cinder {
 		// Quintic
 		struct Quint
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return pow(t, 5.0);
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				return pow(t - 1.0, 5.0) + 1.0;
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				t /= 5.0;
 				if (t < 1.0)
@@ -117,15 +117,15 @@ namespace cinder {
 		// Sinusoidal
 		struct Sine
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return -cos(t * (M_PI / 2.0)) + 1.0;
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				return sin(t * (M_PI / 2.0));
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				return -0.5 * (cos(M_PI * t) - 1.0); 
 			}
@@ -134,15 +134,15 @@ namespace cinder {
 		// Exponential
 		struct Expo
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return t == 0.0 ? 0.0 : pow(2.0, 10.0 * (t - 1.0));
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				return t == 1.0 ? 1.0 : -pow(2.0, -10.0 * t) + 1.0;
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				if (t == 0.0 || t == 1.0) 
 					return t;
@@ -157,15 +157,15 @@ namespace cinder {
 		// Circular
 		struct Circ
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return -(sqrt(1.0 - pow(t, 2.0)) - 1);
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				return sqrt(1.0 - pow(t - 1.0, 2.0));
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				t /= 0.5;
 				if (t < 1.0)
@@ -178,11 +178,11 @@ namespace cinder {
 		// Bounce
 		struct Bounce
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return 1.0;
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				if (t < 1.0 / 2.75)
 				{
@@ -204,7 +204,7 @@ namespace cinder {
 					return 7.5625 * t *t + 0.984375;
 				}
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				return 1.0;
 			}
@@ -212,22 +212,22 @@ namespace cinder {
 		
 		struct Back
 		{			
-			static double easeIn( double t )
+			static float easeIn( float t )
 			{
-				double ks = 1.70158;
+				float ks = 1.70158;
 				return t * t * ((ks+1)*t - ks);
 			}
-			static double easeOut( double t )
+			static float easeOut( float t )
 			{ 
-				double ks = 1.70158;
+				float ks = 1.70158;
 				t -= 1;
 				return (t*t*((ks+1)*t + ks) + 1);
 			}
-			static double easeInOut( double t )
+			static float easeInOut( float t )
 			{
-				double ks = 1.70158;
+				float ks = 1.70158;
 				t *= 2;
-				double s = ks * 1.525;
+				float s = ks * 1.525;
 				
 				if (t < 1) return 0.5*(t*t*(((s)+1)*t - s));
 				return 0.5*((t-=2)*t*(((s)+1)*t + s) + 2);
@@ -238,15 +238,15 @@ namespace cinder {
 		// Elastic
 		struct Elastic
 		{
-			static double easeIn(double t)
+			static float easeIn(float t)
 			{
 				return 1.0;
 			}
-			static double easeOut(double t)
+			static float easeOut(float t)
 			{
 				return 1.0;
 			}
-			static double easeInOut(double t)
+			static float easeInOut(float t)
 			{
 				return 1.0;
 			}

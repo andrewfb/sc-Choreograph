@@ -12,18 +12,18 @@
 
 namespace cinder { namespace tween { 
 
-Sequenceable::Sequenceable( void *target, double startTime, double duration )
+Sequenceable::Sequenceable( void *target, float startTime, float duration )
 	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mReversed( false ), mAutoRemove( false )
 {
 	mComplete = false;
 }
 
-void Sequenceable::stepTo( double newTime )
+void Sequenceable::stepTo( float newTime )
 {
 	if( mComplete )
 		return;
 	
-	double relTime = math<double>::min( (newTime - mStartTime) / mDuration, 1 );
+	float relTime = math<float>::min( (newTime - mStartTime) / mDuration, 1 );
 	if( newTime >= mStartTime + mDuration ) {
 		mComplete = true;
 		update( relTime );		

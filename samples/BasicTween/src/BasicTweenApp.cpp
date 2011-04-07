@@ -24,7 +24,7 @@ struct Box {
 	Vec2f	mPos, mSize;
 };
 
-Box boxLerp( const Box &start, const Box &end, double t )
+Box boxLerp( const Box &start, const Box &end, float t )
 {
 	return Box( lerp( start.mColor, end.mColor, t ), lerp( start.mPos, end.mPos, t), lerp( start.mSize, end.mSize, t ) );
 }

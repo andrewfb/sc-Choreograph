@@ -18,13 +18,13 @@ Sequence::Sequence()
 	mCurrentTime = 0;
 }
 
-void Sequence::step( double timestep )
+void Sequence::step( float timestep )
 {
 	mCurrentTime += timestep;
 	stepTo( mCurrentTime );
 }
 
-void Sequence::stepTo( double absoluteTime )
+void Sequence::stepTo( float absoluteTime )
 {	
 	mCurrentTime = absoluteTime;
 	
