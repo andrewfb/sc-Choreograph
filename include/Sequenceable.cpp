@@ -13,9 +13,8 @@
 namespace cinder { namespace tween { 
 
 Sequenceable::Sequenceable( void *target, float startTime, float duration )
-	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mReversed( false ), mAutoRemove( true )
+	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mReversed( false ), mHasStarted( false ), mComplete( false ), mAutoRemove( true )
 {
-	mComplete = false;
 }
 
 void Sequenceable::stepTo( float newTime )
@@ -26,16 +25,17 @@ void Sequenceable::stepTo( float newTime )
 	float invDuration = ( mDuration <= 0 ) ? 1 : ( 1 / mDuration );
 	
 	float relTime = math<float>::min( (newTime - mStartTime) * invDuration, 1 );
-	if( newTime >= mStartTime + mDuration ) {
-		mComplete = true;
+	if( newTime >= mStartTime ) {
+		if( ! mHasStarted ) {
+			mHasStarted = true;
+			start();
+		}
 		update( relTime );		
 	}
-	else if( newTime >= mStartTime ) {
-		update( relTime );
-	}
-	
-	if( mComplete )
+	if( newTime >= mStartTime + mDuration ) {
+		mComplete = true;
 		complete();
+	}
 }
 			
 } } // namespace cinder::tween

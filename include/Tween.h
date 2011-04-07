@@ -32,7 +32,7 @@ namespace cinder {
 		//Our templated tween design
 		class TweenBase : public Sequenceable {
 		  public:
-			TweenBase( void *target, float startTime, float duration, EaseFn easeFunction = Quadratic::easeInOut );
+			TweenBase( void *target, bool copyStartValue, float startTime, float duration, EaseFn easeFunction = Quadratic::easeInOut );
 			virtual ~TweenBase() {}
 
 			//! change how the tween moves through time
@@ -42,6 +42,7 @@ namespace cinder {
 		  protected:
 			EaseFn		mEaseFunction;
 			float		mDuration;
+			bool		mCopyStartValue;
 		};
 				
 		template<typename T>
@@ -54,13 +55,13 @@ namespace cinder {
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween( T *target, T endValue, float startTime, float duration,
 					EaseFn easeFunction = Quadratic::easeInOut, LerpFn lerpFunction = &lerp<T> )
-				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mLerpFunction( lerpFunction )
+				: TweenBase( target, true, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
 			
 			Tween( T *target, T startValue, T endValue, float startTime, float duration,
 					EaseFn easeFunction = Quadratic::easeInOut, LerpFn lerpFunction = &lerp<T> )
-				: TweenBase( target, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mLerpFunction( lerpFunction )
+				: TweenBase( target, false, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
 			
@@ -70,28 +71,35 @@ namespace cinder {
 				mUpdateFunction = updateFn;
 			}
 						
-			// this could be modified in the future to allow for a PathTween
+			void			setCompletionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFunction; }
+			CompletionFn	getCompletionFn () const { return mCompletionFunction; }
+			
+			//! Returns the starting value for the tween. If the tween will copy its target's value upon starting (isCopyStartValue()) and the tween has not started, this returns the value of its target when the tween was created
+			T	getStartValue() const { return mStartValue; }
+			T	getEndValue() const { return mEndValue; }			
+			T*	getTarget() const { return reinterpret_cast<T*>( mTarget ); }
+			
+			//! Returns whether the tween will copy its target's value upon starting
+			bool	isCopyStartValue() { return mCopyStartValue; }
+			
+		  protected:
+			virtual void start()
+			{
+				if( mCopyStartValue )
+					mStartValue = *(reinterpret_cast<T*>( mTarget ) );
+			}
 			virtual void update( float relativeTime )
 			{
 				*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 				if( mUpdateFunction )
 					mUpdateFunction( reinterpret_cast<T*>(mTarget) );
 			}
-
 			virtual void complete()
 			{
 				if( mCompletionFunction )
 					mCompletionFunction( reinterpret_cast<T*>(mTarget) );
 			}
 
-			void			setCompletionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFunction; }
-			CompletionFn	getCompletionFn () const { return mCompletionFunction; }
-			
-			T	getStartValue() const { return mStartValue; }
-			T	getEndValue() const { return mEndValue; }			
-			T*	getTarget() const { return reinterpret_cast<T*>( mTarget ); }
-			
-		  protected:
 			T	mStartValue, mEndValue;	
 			
 			LerpFn				mLerpFunction;

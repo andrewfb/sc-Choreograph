@@ -26,6 +26,7 @@ namespace cinder
 			
 			//! go to a specific time
 			void stepTo( float time );
+			virtual void start() = 0;
 			virtual void update( float relativeTime ) = 0;
 			virtual void complete() = 0;
 			
@@ -55,7 +56,7 @@ namespace cinder
 		  protected:
 			void	*mTarget;
 			float	mStartTime, mDuration;
-			bool	mComplete;
+			bool	mHasStarted, mComplete;
 			bool	mReversed;
 			bool	mAutoRemove;
 		};

@@ -25,8 +25,8 @@ namespace cinder
 			void					setFn( std::function<void ()> fn ) { mFunction = fn; }
 			std::function<void ()>	getFn() const { return mFunction; }
 			
+			virtual void start() {} // starting is a no-op for Cues
 			virtual void update( float relativeTime );
-			
 			virtual void complete() {} // completion is a no-op for Cues
 			
  		  private:
