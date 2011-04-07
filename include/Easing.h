@@ -62,14 +62,14 @@ namespace cinder {
 			}
 			static float easeOut(float t)
 			{
-				return pow(t - 1.0, 3.0) + 1.0;
+				return pow(t - 1, 3) + 1;
 			}
 			static float easeInOut(float t)
 			{
 				t /= 0.5;
-				if (t < 1.0)
-					return 0.5 * pow(t, 3.0);
-				return 0.5 * (pow(t - 2.0, 3.0) + 2.0); 	
+				if (t < 1)
+					return 0.5 * pow(t, 3);
+				return 0.5 * (pow(t - 2, 3) + 2); 	
 			}
 		};
 		
