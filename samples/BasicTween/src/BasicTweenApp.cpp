@@ -55,7 +55,7 @@ public:
 	float mStep;
 	Vec2f mPos;
 	ColorA mColor;
-	Sequence mSequence;
+	Timeline mSequence;
 	Box		mBox;
 };
 
@@ -182,7 +182,7 @@ void cb( float *f )
 void benchmark()
 {
 	Timer tm;
-	Sequence tln;
+	Timeline tln;
 	const int totalFloats = 200;
 	float tempFloat[totalFloats];
 	for( size_t f = 0; f < totalFloats; ++f ) {

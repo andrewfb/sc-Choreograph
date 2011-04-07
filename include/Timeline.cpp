@@ -1,5 +1,5 @@
 /*
- *  Sequence.cpp
+ *  Timeline.cpp
  *  BasicTween
  *
  *  Created by David Wicks on 5/27/10.
@@ -7,24 +7,24 @@
  *
  */
 
-#include "Sequence.h"
+#include "Timeline.h"
 
 using namespace cinder;
 using namespace cinder::tween;
 typedef std::vector< SeqRef >::iterator s_iter;
 
-Sequence::Sequence()
+Timeline::Timeline()
 {
 	mCurrentTime = 0;
 }
 
-void Sequence::step( float timestep )
+void Timeline::step( float timestep )
 {
 	mCurrentTime += timestep;
 	stepTo( mCurrentTime );
 }
 
-void Sequence::stepTo( float absoluteTime )
+void Timeline::stepTo( float absoluteTime )
 {	
 	mCurrentTime = absoluteTime;
 	
@@ -38,12 +38,12 @@ void Sequence::stepTo( float absoluteTime )
 	}
 }
 
-void Sequence::clearSequence()
+void Timeline::clearSequence()
 {
 	mActions.clear();	
 }
 
-void Sequence::clearCompletedTweens()
+void Timeline::clearCompletedTweens()
 {
 	s_iter iter = mActions.begin();
 	
@@ -59,7 +59,7 @@ void Sequence::clearCompletedTweens()
 	calculateDuration();
 }
 
-void Sequence::replace( SeqRef item )
+void Timeline::replace( SeqRef item )
 {
 	SeqRef existingAction = find( item->getTarget() );
 	if( existingAction )
@@ -69,13 +69,13 @@ void Sequence::replace( SeqRef item )
 }
 
 
-void Sequence::add( SeqRef action )
+void Timeline::add( SeqRef action )
 {
 	mActions.push_back( action );
 	calculateDuration();
 }
 
-void Sequence::calculateDuration()
+void Timeline::calculateDuration()
 {
 	mDuration = 0;
 	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter ) {
@@ -83,7 +83,7 @@ void Sequence::calculateDuration()
 	}	
 }
 
-SeqRef Sequence::find( void *target )
+SeqRef Timeline::find( void *target )
 {
 	s_iter iter = mActions.begin();
 	while( iter != mActions.end() ) {
@@ -95,7 +95,7 @@ SeqRef Sequence::find( void *target )
 	return SeqRef(); // failed returns null tween
 }
 
-void Sequence::remove( SeqRef action )
+void Timeline::remove( SeqRef action )
 {
 	s_iter iter = std::find( mActions.begin(), mActions.end(), action );
 	if( iter != mActions.end() )

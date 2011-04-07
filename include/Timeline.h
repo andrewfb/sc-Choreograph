@@ -21,9 +21,9 @@
 namespace cinder {
 	namespace tween {
 			
-		class Sequence : public Sequenceable {		
+		class Timeline : public Sequenceable {		
 		  public:
-			Sequence();			
+			Timeline();			
 
 			//! advance time a specified amount
 			void step( float timestep );
