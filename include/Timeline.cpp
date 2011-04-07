@@ -11,7 +11,7 @@
 
 using namespace cinder;
 using namespace cinder::tween;
-typedef std::vector< SeqRef >::iterator s_iter;
+typedef std::vector<TimelineItemRef>::iterator s_iter;
 
 Timeline::Timeline()
 {
@@ -28,11 +28,11 @@ void Timeline::stepTo( float absoluteTime )
 {	
 	mCurrentTime = absoluteTime;
 	
-	for( s_iter iter = mActions.begin(); iter != mActions.end(); )
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); )
 	{
 		(**iter).stepTo( mCurrentTime );
 		if( (**iter).isComplete() && (**iter).isAutoRemove() )
-			iter = mActions.erase( iter );
+			iter = mItems.erase( iter );
 		else
 			++iter;
 	}
@@ -40,17 +40,17 @@ void Timeline::stepTo( float absoluteTime )
 
 void Timeline::clearSequence()
 {
-	mActions.clear();	
+	mItems.clear();	
 }
 
 void Timeline::clearCompletedTweens()
 {
-	s_iter iter = mActions.begin();
+	s_iter iter = mItems.begin();
 	
-	while (iter != mActions.end()) {		
+	while (iter != mItems.end()) {		
 		if( (**iter).isComplete() )
 		{
-			iter = mActions.erase(iter);
+			iter = mItems.erase(iter);
 		} else {
 			++iter;
 		}
@@ -59,47 +59,47 @@ void Timeline::clearCompletedTweens()
 	calculateDuration();
 }
 
-void Timeline::replace( SeqRef item )
+void Timeline::replace( TimelineItemRef item )
 {
-	SeqRef existingAction = find( item->getTarget() );
+	TimelineItemRef existingAction = find( item->getTarget() );
 	if( existingAction )
 		remove( existingAction );
-	mActions.push_back( item );
+	mItems.push_back( item );
 	calculateDuration();
 }
 
 
-void Timeline::add( SeqRef action )
+void Timeline::add( TimelineItemRef action )
 {
-	mActions.push_back( action );
+	mItems.push_back( action );
 	calculateDuration();
 }
 
 void Timeline::calculateDuration()
 {
 	mDuration = 0;
-	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter ) {
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
 		mDuration = std::max( (*iter)->getEndTime(), mDuration );
 	}	
 }
 
-SeqRef Timeline::find( void *target )
+TimelineItemRef Timeline::find( void *target )
 {
-	s_iter iter = mActions.begin();
-	while( iter != mActions.end() ) {
+	s_iter iter = mItems.begin();
+	while( iter != mItems.end() ) {
 		if( (*iter)->getTarget() == target )
 			return *iter;
 		++iter;
 	}
 	
-	return SeqRef(); // failed returns null tween
+	return TimelineItemRef(); // failed returns null tween
 }
 
-void Timeline::remove( SeqRef action )
+void Timeline::remove( TimelineItemRef action )
 {
-	s_iter iter = std::find( mActions.begin(), mActions.end(), action );
-	if( iter != mActions.end() )
-		mActions.erase( iter );
+	s_iter iter = std::find( mItems.begin(), mItems.end(), action );
+	if( iter != mItems.end() )
+		mItems.erase( iter );
 	calculateDuration();
 }
 

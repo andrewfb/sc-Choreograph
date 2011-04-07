@@ -22,7 +22,7 @@ namespace cinder
 			TimelineItem() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
 			virtual ~TimelineItem() {}
 			
-			void *getTarget() const { return mTarget; }
+			void* getTarget() const { return mTarget; }
 			
 			//! go to a specific time
 			void stepTo( float time );
@@ -63,6 +63,6 @@ namespace cinder
 			bool	mAutoRemove;
 		};
 		
-		typedef std::shared_ptr<TimelineItem> SeqRef;
+		typedef std::shared_ptr<TimelineItem>	TimelineItemRef;
 	}
 }

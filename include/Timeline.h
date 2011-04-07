@@ -87,14 +87,14 @@ namespace cinder {
 				return newTween;
 			}
 
-			void replace( SeqRef item );
+			void replace( TimelineItemRef item );
 			
 			//! add an action to the sequence
-			void add( SeqRef item );
+			void add( TimelineItemRef item );
 
 			
-			SeqRef		find( void *target );
-			void		remove( SeqRef tween );
+			TimelineItemRef		find( void *target );
+			void				remove( TimelineItemRef tween );
 			
 			//! remove all tweens from the Sequence
 			void clearSequence();
@@ -105,12 +105,12 @@ namespace cinder {
 virtual void start() {}
 virtual void update( float relativeTime) {}
 virtual void complete() {}
-			size_t getNumTweens() const { return mActions.size(); }
+			size_t getNumTweens() const { return mItems.size(); }
 		private:
-			void					calculateDuration();
+			void							calculateDuration();
 		
-			float					mCurrentTime;
-			std::vector< SeqRef >	mActions;
+			float							mCurrentTime;
+			std::vector<TimelineItemRef>	mItems;
 		};
 	}
 
