@@ -17,7 +17,7 @@ namespace cinder
 		//! Base interface for anything that can go on a Sequence
 		class Sequenceable
 		{
-		public:
+  		public:
 			Sequenceable( void *target, float startTime, float duration );
 			Sequenceable() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( false ) {}
 			virtual ~Sequenceable() {}

@@ -21,12 +21,10 @@
 namespace cinder {
 	namespace tween {
 			
-		class Sequence : public Sequenceable {
-		
+		class Sequence : public Sequenceable {		
 		  public:
 			Sequence();			
-			//! add an action to the sequence
-			void add( SeqRef );
+
 			//! advance time a specified amount
 			void step( float timestep );
 			//! go to a specific time
@@ -42,8 +40,7 @@ namespace cinder {
 			//! create a new tween and add it to the list
 			template<typename T>
 			TweenRef<T> add( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
-				mActions.push_back( SeqRef( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) ) );
-				return std::static_pointer_cast< Tween<T> >( mActions.back() );
+				return add( target, *target, endValue, duration, easeFunction, lerpFunction );
 			}
 			
 			//! create a new tween
@@ -52,16 +49,26 @@ namespace cinder {
 				mActions.push_back( SeqRef( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) ) );
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
-			
+
 			//! replace an existing tween
 			template<typename T>
 			TweenRef<T> replace( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
-				SeqRef existingAction = find( target );
-				if( existingAction )
-					remove( existingAction );
-				mActions.push_back( SeqRef( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) ) );
-				return std::static_pointer_cast< Tween<T> >( mActions.back() );
+				return replace( target, *target, endValue, duration, easeFunction, lerpFunction );
 			}
+			
+			//! replace an existing tween
+			template<typename T>
+			TweenRef<T> replace( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
+				replace( newTween );
+				return newTween;
+			}
+
+			void replace( SeqRef item );
+			
+			//! add an action to the sequence
+			void add( SeqRef item );
+
 			
 			SeqRef		find( void *target );
 			void		remove( SeqRef tween );

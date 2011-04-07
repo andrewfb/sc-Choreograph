@@ -106,6 +106,9 @@ namespace cinder {
 			TweenRef( const std::shared_ptr< Tween<T> > &sp )
 				: std::shared_ptr<Tween<T> >( sp )
 			{}
+			TweenRef( Tween<T> *tween )
+				: std::shared_ptr<Tween<T> >( tween )
+			{}
 		};
 
 		

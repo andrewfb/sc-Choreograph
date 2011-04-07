@@ -57,6 +57,15 @@ void Sequence::clearCompletedTweens()
 	}
 }
 
+void Sequence::replace( SeqRef item )
+{
+	SeqRef existingAction = find( item->getTarget() );
+	if( existingAction )
+		remove( existingAction );
+	mActions.push_back( item );
+}
+
+
 void Sequence::add( SeqRef action )
 {
 	mActions.push_back( action );
