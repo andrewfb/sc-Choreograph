@@ -20,18 +20,20 @@ namespace cinder
 		class Cue : public Sequenceable
   		{
 		  public:
-			Cue( std::function<void ()> action, float atTime=0.0 );
-			~Cue();
-			void addReceiver( std::function<void ()> action );
+			Cue( std::function<void ()> fn, float atTime = 0 );
+
+			void					setFn( std::function<void ()> fn ) { mFunction = fn; }
+			std::function<void ()>	getFn() const { return mFunction; }
+			
 			virtual void update( float relativeTime );
 			
 			virtual void complete() {} // completion is a no-op for Cues
 			
  		  private:
-//			boost::signals2::signal<void ()> mSignal;
+			std::function<void ()>		mFunction;
 		};
 		
-		typedef boost::shared_ptr<Cue> CueRef;
+		typedef std::shared_ptr<Cue>	CueRef;
 	}
 	
 	

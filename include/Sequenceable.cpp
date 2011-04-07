@@ -23,7 +23,9 @@ void Sequenceable::stepTo( float newTime )
 	if( mComplete )
 		return;
 	
-	float relTime = math<float>::min( (newTime - mStartTime) / mDuration, 1 );
+	float invDuration = ( mDuration <= 0 ) ? 1 : ( 1 / mDuration );
+	
+	float relTime = math<float>::min( (newTime - mStartTime) * invDuration, 1 );
 	if( newTime >= mStartTime + mDuration ) {
 		mComplete = true;
 		update( relTime );		

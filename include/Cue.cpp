@@ -14,25 +14,14 @@ namespace cinder
 
 	namespace tween
 	{
-		Cue::Cue( std::function<void ()> action, float atTime ):
-		Sequenceable( &action, atTime, 0 )
+		Cue::Cue( std::function<void ()> fn, float atTime ):
+			Sequenceable( 0, atTime, 0 ), mFunction( fn )
 		{
-			//mSignal.connect( action );
-		}
-		
-		Cue::~Cue()
-		{
-			
-		}
-		
-		void Cue::addReceiver( std::function<void ()> action )
-		{
-//			mSignal.connect( action );
 		}
 		
 		void Cue::update( float relativeTime )
 		{
-//			mSignal();
+			mFunction();
 		}
 	}
 

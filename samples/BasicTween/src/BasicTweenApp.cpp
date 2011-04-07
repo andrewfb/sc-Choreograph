@@ -48,7 +48,7 @@ public:
 	
 	void resize( int width, int height );
 	
-	void respond();
+	void cueExample();
 	
   private:	
 	float mX, mY;
@@ -76,8 +76,7 @@ void BasicTweenApp::setup()
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
-//	mSequence.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
-	
+	mSequence.add( std::bind( &BasicTweenApp::cueExample, this ), 2.0 );	
 }
 
 void BasicTweenApp::update()
@@ -101,7 +100,7 @@ void BasicTweenApp::draw()
 	mBox.draw();
 }
 
-void BasicTweenApp::respond()
+void BasicTweenApp::cueExample()
 {
 	console() << "Tween completed." << endl;
 }
