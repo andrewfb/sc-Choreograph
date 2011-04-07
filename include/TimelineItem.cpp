@@ -1,5 +1,5 @@
 /*
- *  Sequenceable.cpp
+ *  TimelineItem.cpp
  *  BasicTween
  *
  *  Created by Andrew Bell on 4/5/11.
@@ -7,17 +7,17 @@
  *
  */
 
-#include "Sequenceable.hpp"
+#include "TimelineItem.h"
 #include "cinder/CinderMath.h"
 
 namespace cinder { namespace tween { 
 
-Sequenceable::Sequenceable( void *target, float startTime, float duration )
+TimelineItem::TimelineItem( void *target, float startTime, float duration )
 	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mReversed( false ), mHasStarted( false ), mComplete( false ), mAutoRemove( true )
 {
 }
 
-void Sequenceable::stepTo( float newTime )
+void TimelineItem::stepTo( float newTime )
 {
 	if( mComplete )
 		return;

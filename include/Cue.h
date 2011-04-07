@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "Sequenceable.hpp"
+#include "TimelineItem.h"
 #include "cinder/Function.h"
 
 namespace cinder
@@ -17,7 +17,7 @@ namespace cinder
 
 	namespace tween
 	{
-		class Cue : public Sequenceable
+		class Cue : public TimelineItem
   		{
 		  public:
 			Cue( std::function<void ()> fn, float atTime = 0 );

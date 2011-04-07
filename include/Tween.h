@@ -13,7 +13,7 @@
 #pragma once
 
 #include "Easing.h"
-#include "Sequenceable.hpp"
+#include "TimelineItem.h"
 
 #include "cinder/Cinder.h"
 #include "cinder/CinderMath.h"
@@ -30,7 +30,7 @@ namespace cinder {
 		}
 		
 		//Our templated tween design
-		class TweenBase : public Sequenceable {
+		class TweenBase : public TimelineItem {
 		  public:
 			TweenBase( void *target, bool copyStartValue, float startTime, float duration, EaseFn easeFunction = Quadratic::easeInOut );
 			virtual ~TweenBase() {}

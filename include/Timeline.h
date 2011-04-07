@@ -21,7 +21,7 @@
 namespace cinder {
 	namespace tween {
 			
-		class Timeline : public Sequenceable {		
+		class Timeline : public TimelineItem {		
 		  public:
 			Timeline();			
 

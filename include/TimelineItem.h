@@ -1,5 +1,5 @@
 /*
- *  Sequenceable.h
+ *  TimelineItem.h
  *  sc-Choreograph
  *
  *  Created by David Wicks on 2/14/11.
@@ -15,12 +15,12 @@ namespace cinder
 	namespace tween
 	{
 		//! Base interface for anything that can go on a Timeline
-		class Sequenceable
+		class TimelineItem
 		{
-  		public:
-			Sequenceable( void *target, float startTime, float duration );
-			Sequenceable() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
-			virtual ~Sequenceable() {}
+		  public:
+			TimelineItem( void *target, float startTime, float duration );
+			TimelineItem() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
+			virtual ~TimelineItem() {}
 			
 			void *getTarget() const { return mTarget; }
 			
@@ -49,7 +49,7 @@ namespace cinder
 			//! pinpong infinitely:-1, count:1–n
 			//void pingpong(){}
 			
-			//! is the sequenceable action finished?
+			//! is the TimelineItem action finished?
 			virtual bool isComplete() { return mComplete; }
 			
 			bool	isAutoRemove() const { return mAutoRemove; }
@@ -63,6 +63,6 @@ namespace cinder
 			bool	mAutoRemove;
 		};
 		
-		typedef std::shared_ptr<Sequenceable> SeqRef;
+		typedef std::shared_ptr<TimelineItem> SeqRef;
 	}
 }

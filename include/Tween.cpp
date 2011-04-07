@@ -15,7 +15,7 @@
 namespace cinder { namespace tween {
 
 TweenBase::TweenBase( void *target, bool copyStartValue, float startTime, float duration, EaseFn easeFunction )
-	: Sequenceable( target, startTime, duration ), mCopyStartValue( copyStartValue ), mEaseFunction( easeFunction )
+	: TimelineItem( target, startTime, duration ), mCopyStartValue( copyStartValue ), mEaseFunction( easeFunction )
 {
 }
 
