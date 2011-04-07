@@ -28,12 +28,12 @@ namespace cinder {
 			//! add an action to the sequence
 			void add( SeqRef );
 			//! advance time a specified amount
-			void step( double timestep );
+			void step( float timestep );
 			//! go to a specific time
-			void stepTo( double absoluteTime );
+			void stepTo( float absoluteTime );
 			
 			//! add a cue to the Sequence
-			SeqRef add( std::function<void ()> action, double atTime )
+			SeqRef add( std::function<void ()> action, float atTime )
 			{
 				mActions.push_back( SeqRef( new Cue( action, atTime ) ) );
 				return mActions.back();
@@ -41,21 +41,21 @@ namespace cinder {
 			
 			//! create a new tween and add it to the list
 			template<typename T>
-			TweenRef<T> add( T *target, T endValue, double duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> add( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				mActions.push_back( SeqRef( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) ) );
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
 			//! create a new tween
 			template<typename T>
-			TweenRef<T> add( T *target, T startValue, T endValue, double duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> add( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				mActions.push_back( SeqRef( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) ) );
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
 			//! replace an existing tween
 			template<typename T>
-			TweenRef<T> replace( T *target, T endValue, double duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> replace( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				SeqRef existingAction = find( target );
 				if( existingAction )
 					remove( existingAction );
@@ -72,11 +72,11 @@ namespace cinder {
 			void clearCompletedTweens();
 			//! reset time to zero
 			void reset(){ stepTo( 0.0 ); }
-virtual void update( double relativeTime) {}
+virtual void update( float relativeTime) {}
 virtual void complete() {}
 			size_t getNumTweens() const { return mActions.size(); }
 		private:
-			double					mCurrentTime;
+			float					mCurrentTime;
 			std::vector< SeqRef >	mActions;
 		};
 	}

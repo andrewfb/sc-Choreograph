@@ -11,7 +11,6 @@
 
 #include "Sequenceable.hpp"
 #include "cinder/Function.h"
-#include <boost/signals2.hpp>
 
 namespace cinder
 {
@@ -21,15 +20,15 @@ namespace cinder
 		class Cue : public Sequenceable
   		{
 		  public:
-			Cue( std::function<void ()> action, double atTime=0.0 );
+			Cue( std::function<void ()> action, float atTime=0.0 );
 			~Cue();
 			void addReceiver( std::function<void ()> action );
-			virtual void update( double relativeTime );
+			virtual void update( float relativeTime );
 			
 			virtual void complete() {} // completion is a no-op for Cues
 			
  		  private:
-			boost::signals2::signal<void ()> mSignal;
+//			boost::signals2::signal<void ()> mSignal;
 		};
 		
 		typedef boost::shared_ptr<Cue> CueRef;

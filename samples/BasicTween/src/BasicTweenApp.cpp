@@ -24,7 +24,7 @@ struct Box {
 	Vec2f	mPos, mSize;
 };
 
-Box boxLerp( const Box &start, const Box &end, double t )
+Box boxLerp( const Box &start, const Box &end, float t )
 {
 	return Box( lerp( start.mColor, end.mColor, t ), lerp( start.mPos, end.mPos, t), lerp( start.mSize, end.mSize, t ) );
 }
@@ -76,7 +76,7 @@ void BasicTweenApp::setup()
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
-	mSequence.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
+//	mSequence.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
 	
 }
 
@@ -163,7 +163,7 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 	
 	// make a new random box and tween to that
 	TweenRef<Box> boxTween = mSequence.replace( &mBox, randomBox(), 3.0, Quadratic::easeInOut, boxLerp );
-	boxTween->addUpdateSlot( printBox );
+	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );
 	boxTween->setAutoRemove();
 	
@@ -183,7 +183,7 @@ void benchmark()
 	for( size_t f = 0; f < totalFloats; ++f ) {
 		tempFloat[f] = 0;
 		TweenRef<float> twn = tln.add( &tempFloat[f], 10.0f, 1 );
-//		twn->addUpdateSlot( cb );
+		twn->setUpdateFn( cb );
 	}
 	tm.start();
 		for( size_t t = 0; t < 1000000; ++t ) {
