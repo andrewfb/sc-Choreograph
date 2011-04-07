@@ -13,7 +13,7 @@
 namespace cinder { namespace tween { 
 
 Sequenceable::Sequenceable( void *target, float startTime, float duration )
-	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mReversed( false ), mAutoRemove( false )
+	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mReversed( false ), mAutoRemove( true )
 {
 	mComplete = false;
 }

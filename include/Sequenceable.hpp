@@ -19,7 +19,7 @@ namespace cinder
 		{
   		public:
 			Sequenceable( void *target, float startTime, float duration );
-			Sequenceable() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( false ) {}
+			Sequenceable() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
 			virtual ~Sequenceable() {}
 			
 			void *getTarget() const { return mTarget; }

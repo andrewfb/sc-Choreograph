@@ -31,28 +31,33 @@ namespace cinder {
 			void stepTo( float absoluteTime );
 			
 			//! add a cue to the Sequence
-			SeqRef add( std::function<void ()> action, float atTime )
+			CueRef add( std::function<void ()> action, float atTime )
 			{
-				mActions.push_back( SeqRef( new Cue( action, atTime ) ) );
-				return mActions.back();
+				CueRef newCue( new Cue( action, atTime ) );
+				add( newCue );
+				return newCue;
 			}
 			
 			//! create a new tween and add it to the list
 			template<typename T>
-			TweenRef<T> add( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> add( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
+			{
 				return add( target, *target, endValue, duration, easeFunction, lerpFunction );
 			}
 			
 			//! create a new tween
 			template<typename T>
-			TweenRef<T> add( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
-				mActions.push_back( SeqRef( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) ) );
-				return std::static_pointer_cast< Tween<T> >( mActions.back() );
+			TweenRef<T> add( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
+			{
+				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
+				add( newTween );
+				return newTween;
 			}
 
 			//! replace an existing tween
 			template<typename T>
-			TweenRef<T> replace( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> replace( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
+			{
 				return replace( target, *target, endValue, duration, easeFunction, lerpFunction );
 			}
 			
@@ -61,6 +66,18 @@ namespace cinder {
 			TweenRef<T> replace( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				replace( newTween );
+				return newTween;
+			}
+
+			template<typename T>
+			TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+				return append( target, *target, endValue, duration, easeFunction, lerpFunction );
+			}
+
+			template<typename T>
+			TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
+				add( newTween );
 				return newTween;
 			}
 
@@ -83,6 +100,8 @@ virtual void update( float relativeTime) {}
 virtual void complete() {}
 			size_t getNumTweens() const { return mActions.size(); }
 		private:
+			void					calculateDuration();
+		
 			float					mCurrentTime;
 			std::vector< SeqRef >	mActions;
 		};

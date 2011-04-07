@@ -55,6 +55,8 @@ void Sequence::clearCompletedTweens()
 			++iter;
 		}
 	}
+	
+	calculateDuration();
 }
 
 void Sequence::replace( SeqRef item )
@@ -63,12 +65,22 @@ void Sequence::replace( SeqRef item )
 	if( existingAction )
 		remove( existingAction );
 	mActions.push_back( item );
+	calculateDuration();
 }
 
 
 void Sequence::add( SeqRef action )
 {
 	mActions.push_back( action );
+	calculateDuration();
+}
+
+void Sequence::calculateDuration()
+{
+	mDuration = 0;
+	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter ) {
+		mDuration = std::max( (*iter)->getEndTime(), mDuration );
+	}	
 }
 
 SeqRef Sequence::find( void *target )
@@ -88,6 +100,7 @@ void Sequence::remove( SeqRef action )
 	s_iter iter = std::find( mActions.begin(), mActions.end(), action );
 	if( iter != mActions.end() )
 		mActions.erase( iter );
+	calculateDuration();
 }
 
 

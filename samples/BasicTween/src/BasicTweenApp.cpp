@@ -161,7 +161,7 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 	mSequence.replace( &mY, mousePos.y, 1.5, Quadratic::easeInOut );
 	
 	// make a new random box and tween to that
-	TweenRef<Box> boxTween = mSequence.replace( &mBox, randomBox(), 3.0, Quadratic::easeInOut, boxLerp );
+	TweenRef<Box> boxTween = mSequence.append( &mBox, randomBox(), 3.0, Quadratic::easeInOut, boxLerp );
 	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );
 	boxTween->setAutoRemove();
