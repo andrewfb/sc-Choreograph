@@ -40,6 +40,8 @@ namespace cinder
 			//! push back the action's start time
 			void delay( float amt ) { mStartTime += amt; }
 			
+			bool hasStarted() const { return mHasStarted; }
+			
 			//! change how time behaves
 			void reverse( bool isReversed = true ){ mReversed = isReversed; }
 			//! loop infinitely:-1, count:1-n

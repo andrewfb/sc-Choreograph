@@ -49,6 +49,7 @@ namespace cinder {
 		class Tween : public TweenBase {
 		  public:
 			typedef std::function<T (const T&, const T&, float)>	LerpFn;
+			typedef std::function<void (T*)>						StartFn;
 			typedef std::function<void (T*)>						CompletionFn;
 			typedef std::function<void (T*)>						UpdateFn;
 
@@ -70,9 +71,12 @@ namespace cinder {
 			void setUpdateFn( std::function<void (T*)> updateFn ) {
 				mUpdateFunction = updateFn;
 			}
+
+			void			setStartFn( StartFn startFunction ) { mStartFunction = startFunction; }
+			StartFn			getStartFn() const { return mStartFunction; }
 						
 			void			setCompletionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFunction; }
-			CompletionFn	getCompletionFn () const { return mCompletionFunction; }
+			CompletionFn	getCompletionFn() const { return mCompletionFunction; }
 			
 			//! Returns the starting value for the tween. If the tween will copy its target's value upon starting (isCopyStartValue()) and the tween has not started, this returns the value of its target when the tween was created
 			T	getStartValue() const { return mStartValue; }
@@ -87,6 +91,8 @@ namespace cinder {
 			{
 				if( mCopyStartValue )
 					mStartValue = *(reinterpret_cast<T*>( mTarget ) );
+				if( mStartFunction )
+					mStartFunction( reinterpret_cast<T*>(mTarget) );
 			}
 			virtual void update( float relativeTime )
 			{
@@ -102,10 +108,10 @@ namespace cinder {
 
 			T	mStartValue, mEndValue;	
 			
+			StartFn				mStartFunction;
 			LerpFn				mLerpFunction;
 			CompletionFn		mCompletionFunction;
 			UpdateFn			mUpdateFunction;
-//			UpdateSignal		mUpdateSignal;
 		};
 		
 		template<typename T = void*>

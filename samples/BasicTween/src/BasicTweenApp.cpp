@@ -139,6 +139,11 @@ Box randomBox()
 		Vec2f( Rand::randFloat( 40 ), Rand::randFloat( 40 ) ) );
 }
 
+void boxStart( Box *box )
+{
+	console() << std::endl << "Box is starting." << std::endl;
+}
+
 void printBox( Box *box )
 {
 	console() << box->mPos;
@@ -162,6 +167,7 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 	
 	// make a new random box and tween to that
 	TweenRef<Box> boxTween = mSequence.append( &mBox, randomBox(), 3.0, Quadratic::easeInOut, boxLerp );
+	boxTween->setStartFn( boxStart );
 	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );
 	boxTween->setAutoRemove();
