@@ -40,26 +40,24 @@ namespace cinder
 			//! push back the action's start time
 			void delay( float amt ) { mStartTime += amt; }
 			
-			bool hasStarted() const { return mHasStarted; }
-			
-			//! change how time behaves
-			void reverse( bool isReversed = true ){ mReversed = isReversed; }
-			//! loop infinitely:-1, count:1-n
-			//void loop(){}
-			//! pinpong infinitely:-1, count:1–n
-			//void pingpong(){}
-			
-			//! is the TimelineItem action finished?
+			//! Has the item begun?
+			bool hasStarted() const { return mHasStarted; }			
+			//! Has the item finished?
 			virtual bool isComplete() { return mComplete; }
 			
+			//! Should the item remove itself from the Timeline when it is complete
 			bool	isAutoRemove() const { return mAutoRemove; }
-			bool	setAutoRemove( bool autoRemove = true ) { mAutoRemove = autoRemove; }
+			//! Sets whether the item will remove itself from the Timeline when it is complete
+			void	setAutoRemove( bool autoRemove = true ) { mAutoRemove = autoRemove; }
+			
+			bool	isLoop() const { return mLoop; }
+			void	setLoop( bool loop = true ) { mLoop = loop; }
 			
 		  protected:
 			void	*mTarget;
 			float	mStartTime, mDuration;
 			bool	mHasStarted, mComplete;
-			bool	mReversed;
+			bool	mLoop;
 			bool	mAutoRemove;
 		};
 		

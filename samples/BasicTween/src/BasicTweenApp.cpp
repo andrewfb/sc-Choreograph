@@ -146,7 +146,7 @@ void boxStart( Box *box )
 
 void printBox( Box *box )
 {
-	console() << box->mPos;
+	console() << box->mPos.x;
 }
 
 void boxDone( Box *box )
@@ -170,9 +170,10 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 	boxTween->setStartFn( boxStart );
 	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );
-	boxTween->setAutoRemove();
+//	boxTween->setAutoRemove();
+	boxTween->setLoop();
 	
-console() << mSequence.getNumTweens() << "tweens" << std::endl;
+console() << mSequence.getNumTweens() << "tweens lasting " << mSequence.getDuration() << std::endl;
 }
 
 void cb( float *f )
