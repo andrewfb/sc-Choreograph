@@ -76,7 +76,9 @@ void BasicTweenApp::setup()
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
-	mSequence.add( std::bind( &BasicTweenApp::cueExample, this ), 2.0 );	
+	TimelineItemRef cue = mSequence.add( std::bind( &BasicTweenApp::cueExample, this ), 2.0 );
+	cue->setDuration( 1 );
+	cue->setLoop();
 }
 
 void BasicTweenApp::update()

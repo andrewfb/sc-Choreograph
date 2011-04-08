@@ -26,9 +26,6 @@ namespace cinder
 			
 			//! go to a specific time
 			void stepTo( float time );
-			virtual void start() = 0;
-			virtual void update( float relativeTime ) = 0;
-			virtual void complete() = 0;
 			
 			float getStartTime() const { return mStartTime; }
 			float getEndTime() const { return mStartTime + mDuration; }
@@ -56,13 +53,19 @@ namespace cinder
 			//! Ping-pong overrides 'loop'
 			bool	isPingPong() const { return mPingPong; }
 			void	setPingPong( bool pingPong = true ) { mPingPong = pingPong; }
-			
+
+			virtual void start() = 0;
+			virtual void update( float relativeTime ) = 0;
+			virtual void complete() = 0;
+			//! Call update() only at the beginning of each loop (for example Cues exhibit require this behavior)
+			virtual bool updateAtLoopStart() { return false; }
 		  protected:
 			void	*mTarget;
 			float	mStartTime, mDuration;
 			bool	mHasStarted, mComplete;
 			bool	mPingPong, mLoop;
 			bool	mAutoRemove;
+			int32_t	mLastLoopIteration;
 		};
 		
 		typedef std::shared_ptr<TimelineItem>	TimelineItemRef;

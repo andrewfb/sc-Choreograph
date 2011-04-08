@@ -28,7 +28,7 @@ namespace cinder
 			virtual void start() {} // starting is a no-op for Cues
 			virtual void update( float relativeTime );
 			virtual void complete() {} // completion is a no-op for Cues
-			
+			virtual bool updateAtLoopStart() { return true; }
  		  private:
 			std::function<void ()>		mFunction;
 		};
