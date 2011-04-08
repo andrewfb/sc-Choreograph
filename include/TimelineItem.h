@@ -52,12 +52,16 @@ namespace cinder
 			
 			bool	isLoop() const { return mLoop; }
 			void	setLoop( bool loop = true ) { mLoop = loop; }
+
+			//! Ping-pong overrides 'loop'
+			bool	isPingPong() const { return mPingPong; }
+			void	setPingPong( bool pingPong = true ) { mPingPong = pingPong; }
 			
 		  protected:
 			void	*mTarget;
 			float	mStartTime, mDuration;
 			bool	mHasStarted, mComplete;
-			bool	mLoop;
+			bool	mPingPong, mLoop;
 			bool	mAutoRemove;
 		};
 		

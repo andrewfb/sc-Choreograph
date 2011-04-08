@@ -171,7 +171,7 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );
 //	boxTween->setAutoRemove();
-	boxTween->setLoop();
+	boxTween->setPingPong();
 	
 console() << mSequence.getNumTweens() << "tweens lasting " << mSequence.getDuration() << std::endl;
 }
