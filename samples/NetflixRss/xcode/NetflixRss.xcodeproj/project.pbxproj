@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00912976130A47B2008D1469 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0091296F130A47B2008D1469 /* Timeline.cpp */; };
-		00912977130A47B2008D1469 /* Sequenceable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00912975130A47B2008D1469 /* Sequenceable.cpp */; };
+		008D8C341350211700CDE0C5 /* Cue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008D8C2B1350211700CDE0C5 /* Cue.cpp */; };
+		008D8C351350211700CDE0C5 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008D8C2E1350211700CDE0C5 /* Timeline.cpp */; };
+		008D8C361350211700CDE0C5 /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008D8C301350211700CDE0C5 /* TimelineItem.cpp */; };
+		008D8C371350211700CDE0C5 /* Tween.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 008D8C321350211700CDE0C5 /* Tween.cpp */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
 		0097E3E50F3E9819005A4392 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0097E3E40F3E9819005A4392 /* QuickTime.framework */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
@@ -24,14 +26,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0091296E130A47B2008D1469 /* TimeBasis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeBasis.h; sourceTree = "<group>"; };
-		0091296F130A47B2008D1469 /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
-		00912970130A47B2008D1469 /* Tween.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tween.h; sourceTree = "<group>"; };
-		00912971130A47B2008D1469 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
-		00912972130A47B2008D1469 /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
-		00912973130A47B2008D1469 /* Tweening.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tweening.h; sourceTree = "<group>"; };
-		00912974130A47B2008D1469 /* Sequenceable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sequenceable.h; sourceTree = "<group>"; };
-		00912975130A47B2008D1469 /* Sequenceable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sequenceable.cpp; sourceTree = "<group>"; };
+		008D8C2A1350211700CDE0C5 /* Choreograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choreograph.h; sourceTree = "<group>"; };
+		008D8C2B1350211700CDE0C5 /* Cue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cue.cpp; sourceTree = "<group>"; };
+		008D8C2C1350211700CDE0C5 /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
+		008D8C2D1350211700CDE0C5 /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
+		008D8C2E1350211700CDE0C5 /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
+		008D8C2F1350211700CDE0C5 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
+		008D8C301350211700CDE0C5 /* TimelineItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimelineItem.cpp; sourceTree = "<group>"; };
+		008D8C311350211700CDE0C5 /* TimelineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineItem.h; sourceTree = "<group>"; };
+		008D8C321350211700CDE0C5 /* Tween.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Tween.cpp; sourceTree = "<group>"; };
+		008D8C331350211700CDE0C5 /* Tween.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tween.h; sourceTree = "<group>"; };
+		008D8C4413509C7100CDE0C5 /* NetflixRssParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NetflixRssParser.h; path = ../include/NetflixRssParser.h; sourceTree = SOURCE_ROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		0097E3E40F3E9819005A4392 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -92,14 +97,16 @@
 		0091296D130A47B2008D1469 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				0091296E130A47B2008D1469 /* TimeBasis.h */,
-				0091296F130A47B2008D1469 /* Timeline.cpp */,
-				00912970130A47B2008D1469 /* Tween.h */,
-				00912971130A47B2008D1469 /* Timeline.h */,
-				00912972130A47B2008D1469 /* Easing.h */,
-				00912973130A47B2008D1469 /* Tweening.h */,
-				00912974130A47B2008D1469 /* Sequenceable.h */,
-				00912975130A47B2008D1469 /* Sequenceable.cpp */,
+				008D8C2A1350211700CDE0C5 /* Choreograph.h */,
+				008D8C2B1350211700CDE0C5 /* Cue.cpp */,
+				008D8C2C1350211700CDE0C5 /* Cue.h */,
+				008D8C2D1350211700CDE0C5 /* Easing.h */,
+				008D8C2E1350211700CDE0C5 /* Timeline.cpp */,
+				008D8C2F1350211700CDE0C5 /* Timeline.h */,
+				008D8C301350211700CDE0C5 /* TimelineItem.cpp */,
+				008D8C311350211700CDE0C5 /* TimelineItem.h */,
+				008D8C321350211700CDE0C5 /* Tween.cpp */,
+				008D8C331350211700CDE0C5 /* Tween.h */,
 			);
 			name = include;
 			path = ../../../include;
@@ -165,6 +172,7 @@
 			isa = PBXGroup;
 			children = (
 				32CA4F630368D1EE00C91783 /* NetflixRss_Prefix.pch */,
+				008D8C4413509C7100CDE0C5 /* NetflixRssParser.h */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -249,8 +257,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				00BAE65A0E7ED9C10018A608 /* NetflixRssApp.cpp in Sources */,
-				00912976130A47B2008D1469 /* Timeline.cpp in Sources */,
-				00912977130A47B2008D1469 /* Sequenceable.cpp in Sources */,
+				008D8C341350211700CDE0C5 /* Cue.cpp in Sources */,
+				008D8C351350211700CDE0C5 /* Timeline.cpp in Sources */,
+				008D8C361350211700CDE0C5 /* TimelineItem.cpp in Sources */,
+				008D8C371350211700CDE0C5 /* Tween.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
