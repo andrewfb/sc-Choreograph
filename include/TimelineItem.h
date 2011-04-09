@@ -52,10 +52,6 @@ namespace cinder
 			bool	isLoop() const { return mLoop; }
 			void	setLoop( bool loop = true ) { mLoop = loop; }
 
-			//! Ping-pong overrides 'loop'
-			bool	isPingPong() const { return mPingPong; }
-			void	setPingPong( bool pingPong = true ) { mPingPong = pingPong; }
-
 			virtual void start() = 0;
 			virtual void loopStart() {}
 			virtual void update( float relativeTime ) = 0;
@@ -66,13 +62,13 @@ namespace cinder
 			virtual bool wantsAbsoluteTime() { return false; }
 			
 		  protected:
-			//! Converts time from absolute to absolute based on item's looping & pingpong attributes
+			//! Converts time from absolute to absolute based on item's looping attributes
 			float	loopTime( float absTime );
 
 			void	*mTarget;
 			float	mStartTime, mDuration;
 			bool	mHasStarted, mComplete;
-			bool	mPingPong, mLoop;
+			bool	mLoop;
 			bool	mAutoRemove;
 			int32_t	mLastLoopIteration;
 			

@@ -120,5 +120,6 @@ void Timeline::loopStart()
 void Timeline::update( float absTime )
 {
 	absTime = loopTime( absTime );
+std::cout << "T: " << absTime << std::endl;
 	stepTo( absTime );
 }

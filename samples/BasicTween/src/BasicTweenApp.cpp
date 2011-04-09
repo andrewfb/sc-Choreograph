@@ -100,7 +100,7 @@ void BasicTweenApp::setup()
 TweenRef<float> temp = mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 1 );
 temp->setUpdateFn( printFloat );
 	mSubtimeline->append<float>( &mSubBoxes[2].mPos.y, 50.0f, 1 );
-	mSubtimeline->setPingPong();
+	mSubtimeline->setLoop();
 	
 	mSequence.add( mSubtimeline );
 }

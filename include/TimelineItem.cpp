@@ -14,7 +14,7 @@ namespace cinder { namespace tween {
 
 TimelineItem::TimelineItem( void *target, float startTime, float duration )
 	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mHasStarted( false ),
-		mComplete( false ), mAutoRemove( true ), mLoop( false ), mPingPong( false ), mLastLoopIteration( -1 )
+		mComplete( false ), mAutoRemove( true ), mLoop( false ), mLastLoopIteration( -1 )
 {
 }
 
@@ -28,12 +28,7 @@ void TimelineItem::stepTo( float newTime )
 	
 	if( newTime >= mStartTime ) {
 		float relTime;
-		if( mPingPong ) {
-			relTime = math<float>::fmod( absTime * invDuration, 2 );
-			if( relTime > 1 )
-				relTime = 2 - relTime;
-		}
-		else if( mLoop ) {
+		if( mLoop ) {
 			relTime = math<float>::fmod( absTime * invDuration, 1 );
 		}
 		else
@@ -46,7 +41,7 @@ void TimelineItem::stepTo( float newTime )
 		
 		float time = ( wantsAbsoluteTime() ) ? absTime : relTime;
 		
-		if( mLoop || mPingPong ) {
+		if( mLoop ) {
 			int32_t loopIteration = static_cast<int32_t>( ( newTime - mStartTime ) * invDuration );
 			if( loopIteration != mLastLoopIteration ) {
 				mLastLoopIteration = loopIteration;
@@ -59,7 +54,7 @@ void TimelineItem::stepTo( float newTime )
 		else
 			update( time );
 	}
-	if( newTime >= mStartTime + mDuration && ( ! mLoop ) && ( ! mPingPong ) ) {
+	if( newTime >= mStartTime + mDuration && ( ! mLoop ) ) {
 		mComplete = true;
 		complete();
 	}
@@ -71,13 +66,7 @@ float TimelineItem::loopTime( float absTime )
 
 	float invDuration = ( mDuration <= 0 ) ? 1 : ( 1 / mDuration );
 	
-	if( mPingPong ) {
-		result = math<float>::fmod( result * invDuration, 2 );
-		if( result > 1 )
-			result = 2 - result;
-		result *= mDuration;			
-	}
-	else if( mLoop ) {
+	if( mLoop ) {
 		result = math<float>::fmod( result * invDuration, 1 );
 		result *= mDuration;
 	}
