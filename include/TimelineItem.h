@@ -36,11 +36,13 @@ namespace cinder
 			void setDuration( float duration ) { mDuration = duration; }
 			//! push back the action's start time
 			void delay( float amt ) { mStartTime += amt; }
+			//! Sets the time to zero, not completed, and if \a unsetStarted, marks the tweens has not started
+			virtual void reset( bool unsetStarted = false ) { if( unsetStarted ) mHasStarted = false; mComplete = false; }
 			
 			//! Has the item begun?
 			bool hasStarted() const { return mHasStarted; }			
 			//! Has the item finished?
-			virtual bool isComplete() { return mComplete; }
+			bool isComplete() { return mComplete; }
 			
 			//! Should the item remove itself from the Timeline when it is complete
 			bool	isAutoRemove() const { return mAutoRemove; }
@@ -64,12 +66,17 @@ namespace cinder
 			virtual bool wantsAbsoluteTime() { return false; }
 			
 		  protected:
+			//! Converts time from absolute to absolute based on item's looping & pingpong attributes
+			float	loopTime( float absTime );
+
 			void	*mTarget;
 			float	mStartTime, mDuration;
 			bool	mHasStarted, mComplete;
 			bool	mPingPong, mLoop;
 			bool	mAutoRemove;
 			int32_t	mLastLoopIteration;
+			
+			friend class Timeline;
 		};
 		
 		typedef std::shared_ptr<TimelineItem>	TimelineItemRef;

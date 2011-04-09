@@ -103,7 +103,22 @@ void Timeline::remove( TimelineItemRef action )
 	calculateDuration();
 }
 
+void Timeline::reset( bool unsetStarted )
+{
+	TimelineItem::reset( unsetStarted );
+	
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter )
+		(*iter)->reset( unsetStarted );
+}
+
+
+void Timeline::loopStart()
+{
+	reset( false );
+}
+
 void Timeline::update( float absTime )
 {
+	absTime = loopTime( absTime );
 	stepTo( absTime );
 }

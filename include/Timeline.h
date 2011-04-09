@@ -103,7 +103,7 @@ namespace cinder {
 			//! add an action to the sequence
 			void add( TimelineItemRef item );
 
-			
+			size_t				getNumItems() const { return mItems.size(); }			
 			TimelineItemRef		find( void *target );
 			void				remove( TimelineItemRef tween );
 			
@@ -111,19 +111,19 @@ namespace cinder {
 			void clearSequence();
 			//! remove completed tweens from the Sequence
 			void clearCompletedTweens();
-			//! reset time to zero
-			void reset() { stepTo( 0.0 ); }
-			
+			//! Sets the time to zero, all tweens as not completed, and if \a unsetStarted, marks the tweens has not started
+			void reset( bool unsetStarted = false );
+
 			void	setDefaultAutoRemove( bool defaultAutoRemove ) { mDefaultAutoRemove = defaultAutoRemove; }
 			bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
 			
+		  protected:
 			virtual void start() {}
+			virtual void loopStart();
 			virtual void update( float absTime );
 			virtual void complete() {}
 			virtual bool wantsAbsoluteTime() { return true; }
-			
-			size_t getNumItems() const { return mItems.size(); }
-		  protected:
+
 			void							calculateDuration();
 		
 			bool							mDefaultAutoRemove;

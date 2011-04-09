@@ -14,7 +14,7 @@ namespace cinder { namespace tween {
 
 TimelineItem::TimelineItem( void *target, float startTime, float duration )
 	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mHasStarted( false ),
-		mComplete( false ), mAutoRemove( true ), mLoop( false ), mPingPong( false ), mLastLoopIteration( 0 )
+		mComplete( false ), mAutoRemove( true ), mLoop( false ), mPingPong( false ), mLastLoopIteration( -1 )
 {
 }
 
@@ -42,7 +42,6 @@ void TimelineItem::stepTo( float newTime )
 		if( ! mHasStarted ) {
 			mHasStarted = true;
 			start();
-			loopStart();
 		}
 		
 		float time = ( wantsAbsoluteTime() ) ? absTime : relTime;
@@ -54,6 +53,8 @@ void TimelineItem::stepTo( float newTime )
 				loopStart();
 				update( time );
 			}
+			else
+				update( time );
 		}
 		else
 			update( time );
@@ -62,6 +63,26 @@ void TimelineItem::stepTo( float newTime )
 		mComplete = true;
 		complete();
 	}
+}
+
+float TimelineItem::loopTime( float absTime )
+{
+	float result = absTime;
+
+	float invDuration = ( mDuration <= 0 ) ? 1 : ( 1 / mDuration );
+	
+	if( mPingPong ) {
+		result = math<float>::fmod( result * invDuration, 2 );
+		if( result > 1 )
+			result = 2 - result;
+		result *= mDuration;			
+	}
+	else if( mLoop ) {
+		result = math<float>::fmod( result * invDuration, 1 );
+		result *= mDuration;
+	}
+
+	return result;
 }
 
 } } // namespace cinder::tween

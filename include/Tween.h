@@ -87,6 +87,11 @@ namespace cinder {
 			bool	isCopyStartValue() { return mCopyStartValue; }
 			
 		  protected:
+			virtual void reset( bool unsetStarted )
+			{
+				TimelineItem::reset( unsetStarted );
+				*(reinterpret_cast<T*>( mTarget ) ) = mStartValue;
+			}
 			virtual void start()
 			{
 				if( mCopyStartValue )

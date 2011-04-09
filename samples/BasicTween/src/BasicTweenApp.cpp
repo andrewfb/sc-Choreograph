@@ -69,6 +69,11 @@ void BasicTweenApp::prepareSettings(Settings *settings)
 	settings->setTitle("BasicTween");
 }
 
+void printFloat( float *v )
+{
+std::cout << "v: " << *v;
+}
+
 void BasicTweenApp::setup()
 {	
 	mX = getWindowWidth()/2;
@@ -80,9 +85,9 @@ void BasicTweenApp::setup()
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
-	TimelineItemRef cue = mSequence.add( std::bind( &BasicTweenApp::cueExample, this ), 2.0 );
+/*	TimelineItemRef cue = mSequence.add( std::bind( &BasicTweenApp::cueExample, this ), 2.0 );
 	cue->setDuration( 1 );
-	cue->setLoop();
+	cue->setLoop();*/
 	
 	// create subtimeline
 	mSubBoxes[0] = Box( Color( 0.2, 0.8, 0 ), Vec2f( 50, getWindowHeight() - 50 ), Vec2f( 30, 30 ) );
@@ -91,10 +96,11 @@ void BasicTweenApp::setup()
 	
 	mSubtimeline = Timeline::create();
 	mSubtimeline->setDefaultAutoRemove( false );
-	mSubtimeline->append<float>( &mSubBoxes[0].mPos.y, 50.0f, 2 );
-	mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 2 )->delay( -1 );	
-	mSubtimeline->append<float>( &mSubBoxes[2].mPos.y, 50.0f, 2 )->delay( -1 );
-	mSubtimeline->setLoop();
+	mSubtimeline->append<float>( &mSubBoxes[0].mPos.y, 50.0f, 1 );
+TweenRef<float> temp = mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 1 );
+temp->setUpdateFn( printFloat );
+	mSubtimeline->append<float>( &mSubBoxes[2].mPos.y, 50.0f, 1 );
+	mSubtimeline->setPingPong();
 	
 	mSequence.add( mSubtimeline );
 }
@@ -141,9 +147,6 @@ void BasicTweenApp::mouseDown( MouseEvent event )
 
 void BasicTweenApp::playRandomTween()
 {
-	// Reset the timeline to zero
-	mSequence.reset();
-	
 	// Tween a Vec2f
 	Vec2f randomPos( Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()) );
 	
@@ -194,7 +197,7 @@ console() << "entering: " << mSequence.getNumItems() << "tweens" << std::endl;
 	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );
 //	boxTween->setAutoRemove();
-	boxTween->setPingPong();
+//	boxTween->setPingPong();
 	
 console() << mSequence.getNumItems() << "tweens lasting " << mSequence.getDuration() << std::endl;
 }
