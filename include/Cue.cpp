@@ -15,7 +15,7 @@ namespace cinder
 	namespace tween
 	{
 		Cue::Cue( std::function<void ()> fn, float atTime ):
-			TimelineItem( 0, atTime, 0 ), mFunction( fn )
+			TimelineItem( 0, 0, atTime, 0 ), mFunction( fn )
 		{
 		}
 		

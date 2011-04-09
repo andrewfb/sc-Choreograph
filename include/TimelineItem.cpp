@@ -8,12 +8,14 @@
  */
 
 #include "TimelineItem.h"
+#include "Timeline.h"
+
 #include "cinder/CinderMath.h"
 
 namespace cinder { namespace tween { 
 
-TimelineItem::TimelineItem( void *target, float startTime, float duration )
-	: mTarget( target ), mStartTime( startTime ), mDuration( duration ), mHasStarted( false ),
+TimelineItem::TimelineItem( Timeline *parent, void *target, float startTime, float duration )
+	: mParent( parent ), mTarget( target ), mStartTime( startTime ), mDuration( duration ), mHasStarted( false ),
 		mComplete( false ), mAutoRemove( true ), mLoop( false ), mLastLoopIteration( -1 )
 {
 }
@@ -58,6 +60,20 @@ void TimelineItem::stepTo( float newTime )
 		mComplete = true;
 		complete();
 	}
+}
+
+void TimelineItem::setStartTime( float time )
+{
+	mStartTime = time;
+	if( mParent )
+		mParent->timeChanged( this );
+}
+
+void TimelineItem::setDuration( float duration )
+{
+	mDuration = duration;
+	if( mParent )
+		mParent->timeChanged( this );
 }
 
 float TimelineItem::loopTime( float absTime )

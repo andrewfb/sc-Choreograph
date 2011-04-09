@@ -17,7 +17,7 @@ typedef std::vector<TimelineItemRef>::iterator s_iter;
 using namespace std;
 
 Timeline::Timeline()
-	: TimelineItem( 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
+	: TimelineItem( 0, 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
 {
 }
 
@@ -85,14 +85,22 @@ void Timeline::replace( TimelineItemRef item )
 	TimelineItemRef existingAction = find( item->getTarget() );
 	if( existingAction )
 		remove( existingAction );
+	insert( item );
+}
+
+
+void Timeline::add( TimelineItemRef item )
+{
+	item->mParent = this;
+	item->mStartTime = mCurrentTime;
 	mItems.push_back( item );
 	calculateDuration();
 }
 
-
-void Timeline::add( TimelineItemRef action )
+void Timeline::insert( TimelineItemRef item )
 {
-	mItems.push_back( action );
+	item->mParent = this;
+	mItems.push_back( item );
 	calculateDuration();
 }
 
@@ -157,6 +165,10 @@ TimelineItemRef Timeline::cloneReverse() const
 void Timeline::update( float absTime )
 {
 	absTime = loopTime( absTime );
-std::cout << "T: " << absTime << std::endl;
 	stepTo( absTime );
+}
+
+void Timeline::timeChanged( TimelineItem *item )
+{
+	calculateDuration();
 }

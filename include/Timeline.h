@@ -30,16 +30,18 @@ namespace cinder {
 			static TimelineRef	create() { return std::shared_ptr<Timeline>( new Timeline() ); }
 
 			//! advance time a specified amount
-			void step( float timestep );
+			void	step( float timestep );
 			//! go to a specific time
-			void stepTo( float absoluteTime );
+			void	stepTo( float absoluteTime );
+			
+			float	getCurrentTime() const { return mCurrentTime; }
 			
 			//! add a cue to the Sequence
 			CueRef add( std::function<void ()> action, float atTime )
 			{
 				CueRef newCue( new Cue( action, atTime ) );
 				newCue->setAutoRemove( mDefaultAutoRemove );
-				add( newCue );
+				insert( newCue );
 				return newCue;
 			}
 			
@@ -49,7 +51,7 @@ namespace cinder {
 			{
 				TweenRef<T> newTween( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
-				add( newTween );
+				insert( newTween );
 				return newTween;
 			}
 			
@@ -59,7 +61,7 @@ namespace cinder {
 			{
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
-				add( newTween );
+				insert( newTween );
 				return newTween;
 			}
 
@@ -86,7 +88,7 @@ namespace cinder {
 			TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
-				add( newTween );
+				insert( newTween );
 				return newTween;
 			}
 
@@ -94,7 +96,7 @@ namespace cinder {
 			TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
-				add( newTween );
+				insert( newTween );
 				return newTween;
 			}
 
@@ -103,8 +105,12 @@ namespace cinder {
 
 			void replace( TimelineItemRef item );
 			
-			//! add an action to the sequence
+			//! add an item to the timeline at the current time
 			void add( TimelineItemRef item );
+			//! adds an item to the timeline. Its start time is not modified
+			void insert( TimelineItemRef item );
+			//! adds an item to the timeline, setting its startTime to be at \a atTime
+			void insert( TimelineItemRef item, float atTime ) { item->mStartTime = atTime; insert( item ); }
 
 			size_t				getNumItems() const { return mItems.size(); }			
 			TimelineItemRef		find( void *target );
@@ -119,6 +125,8 @@ namespace cinder {
 
 			void	setDefaultAutoRemove( bool defaultAutoRemove ) { mDefaultAutoRemove = defaultAutoRemove; }
 			bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
+
+			void	timeChanged( TimelineItem *item );
 
 		  protected:
 			virtual void reverse();

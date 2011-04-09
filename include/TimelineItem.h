@@ -20,8 +20,8 @@ namespace cinder
 		class TimelineItem
 		{
 		  public:
-			TimelineItem( void *target, float startTime, float duration );
-			TimelineItem() : mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
+			TimelineItem( class Timeline *parent = 0) : mParent( parent ), mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
+			TimelineItem( class Timeline *parent, void *target, float startTime, float duration );
 			virtual ~TimelineItem() {}
 			
 			void* getTarget() const { return mTarget; }
@@ -38,10 +38,10 @@ namespace cinder
 			float getDuration() const { return mDuration; }			
 			
 			//! set the action's start time
-			void setStartTime( float time ) { mStartTime = time; }
-			void setDuration( float duration ) { mDuration = duration; }
+			void setStartTime( float time );
+			void setDuration( float duration );
 			//! push back the action's start time
-			void delay( float amt ) { mStartTime += amt; }
+			void delay( float amt ) { setStartTime( mStartTime + amt ); }
 			//! Sets the time to zero, not completed, and if \a unsetStarted, marks the tweens has not started
 			virtual void reset( bool unsetStarted = false ) { if( unsetStarted ) mHasStarted = false; mComplete = false; }
 			
@@ -71,6 +71,8 @@ namespace cinder
 			//! Converts time from absolute to absolute based on item's looping attributes
 			float	loopTime( float absTime );
 
+			class Timeline	*mParent;
+			
 			void	*mTarget;
 			float	mStartTime, mDuration;
 			bool	mHasStarted, mComplete;
