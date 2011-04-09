@@ -2,8 +2,9 @@
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/Xml.h"
-#include "cinder/Thread.h"
+#include "cinder/Text.h"
 #include "Timeline.h"
 
 using namespace ci;
@@ -22,8 +23,13 @@ const Vec2f EXPANDED_SIZE( 250, 100 );
 class Movie {
   public:
 	Movie( const NetflixMovie &info, Vec2f pos, Vec2f size )
-		: mInfo( info ), mPos( pos ), mSize( size ), mAlpha( 1 )
-	{}
+		: mInfo( info ), mPos( pos ), mSize( size ), mAlpha( 1 ), mTitleOffset( sTitleOffset )
+	{
+		TextLayout layout;
+		layout.setColor( ColorA( 0.5f, 0.5f, 0.5f, 1 ) );
+		layout.addLine( info.mTitle );
+		mTitleTexture = gl::Texture( layout.render( true ) );	
+	}
   
 	void draw() {
 		gl::color( ColorA( 1, 1, 1, mAlpha ) );
@@ -31,17 +37,22 @@ class Movie {
 		gl::color( ColorA( 0.7f, 0.7f, 0.7f, mAlpha ) );
 		Rectf inset( Rectf( mPos, mPos + mSize ) );
 		gl::drawStrokedRect( Rectf( inset.getUpperLeft() + Vec2f(2,2), inset.getLowerRight() - Vec2f(2,2)) );
+		gl::color( ColorA( 1, 1, 1, mAlpha ) );		
+		gl::draw( mTitleTexture, mPos + mTitleOffset );
 	}
 
 	bool isPointIn( const Vec2f &pt ) { return Rectf( mPos, mPos + mSize ).contains( pt ); }
 	
 	ci::Vec2f		mPos, mSize;
 	float			mAlpha;
+	ci::Vec2f		mTitleOffset;
 	NetflixMovie	mInfo;
+	gl::Texture		mTitleTexture;
 	
 	static Vec2f	sNormalSize, sExpandedSize;
+	static Vec2f	sTitleOffset, sExpandedTitleOffset;
 };
-Vec2f Movie::sNormalSize, Movie::sExpandedSize;
+Vec2f Movie::sNormalSize, Movie::sExpandedSize, Movie::sTitleOffset, Movie::sExpandedTitleOffset;
 
 class NetflixRssApp : public AppBasic {
   public:
@@ -68,15 +79,19 @@ void NetflixRssApp::setup()
 {
 	NetflixRssParser parser( Url( "http://rss.netflix.com/Top100RSS" ) );
 
-	TimelineRef initialFadeTln = Timeline::create();
 	Movie::sNormalSize = Vec2f( WINDOW_WIDTH - MOVIE_PADDING, WINDOW_HEIGHT - MOVIE_PADDING ) / Vec2f( MOVIE_COLS, MOVIE_ROWS ) - Vec2f( MOVIE_PADDING, MOVIE_PADDING );
-	Movie::sExpandedSize = Vec2f( 250, 100 );
+	Movie::sExpandedSize = Vec2f( 350, 200 );
+	Movie::sTitleOffset = Vec2f( 4, 4 );
+	Movie::sExpandedTitleOffset = Vec2f( 68, 4 );
 	const Vec2f tileOffset = Movie::sNormalSize + Vec2f( MOVIE_PADDING, MOVIE_PADDING );
+	
+	TimelineRef initialFadeTln = Timeline::create();
 	for( size_t m = 0; m < parser.getMovies().size(); ++m ) {
 		int row = m / MOVIE_COLS;
 		int col = m % MOVIE_COLS;
 		Vec2f pos = Vec2f( MOVIE_PADDING, MOVIE_PADDING ) + Vec2f( col * tileOffset.x, row * tileOffset.y );
 		mMovies.push_back( Movie( parser.getMovies()[m], pos, Movie::sNormalSize ) );
+		
 console() << parser.getMovies()[m] << std::endl;
 		
 		mMovies.back().mAlpha = 0;
@@ -99,6 +114,7 @@ void NetflixRssApp::mouseMove( MouseEvent event )
 	if( mCurrentSelection != mMovies.end() ) {
 		mTimeline.replace( &mCurrentSelection->mSize.x, Movie::sNormalSize.x, 0.08f );
 		mTimeline.replace( &mCurrentSelection->mSize.y, Movie::sNormalSize.y, 0.08f );
+		mTimeline.replace( &mCurrentSelection->mTitleOffset, Movie::sTitleOffset, 0.08f );
 	}
 	
 	// find the new selection
@@ -108,6 +124,7 @@ void NetflixRssApp::mouseMove( MouseEvent event )
 			mCurrentSelection = movIt;
 			mTimeline.add( &mCurrentSelection->mSize.x, Movie::sExpandedSize.x, 0.2f );
 			mTimeline.add( &mCurrentSelection->mSize.y, Movie::sExpandedSize.y, 0.2f )->delay( 0.1f );
+			mTimeline.add( &mCurrentSelection->mTitleOffset, Movie::sExpandedTitleOffset, 0.2f );
 			break;
 		}
 	}
