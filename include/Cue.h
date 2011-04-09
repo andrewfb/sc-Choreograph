@@ -25,12 +25,16 @@ namespace cinder
 			void					setFn( std::function<void ()> fn ) { mFunction = fn; }
 			std::function<void ()>	getFn() const { return mFunction; }
 			
+ 		  protected:
+			virtual void				reverse() { /* no-op */ }
+			virtual TimelineItemRef	cloneReverse() const;
+
 			virtual void start() {} // starting is a no-op for Cues
 			virtual void loopStart();
 			virtual void update( float relativeTime ) {} // update is a no-op for Cues
 			virtual void complete() {} // completion is a no-op for Cues
 			virtual bool updateAtLoopStart() { return true; }
- 		  private:
+		  
 			std::function<void ()>		mFunction;
 		};
 		

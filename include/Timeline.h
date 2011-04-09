@@ -98,6 +98,9 @@ namespace cinder {
 				return newTween;
 			}
 
+			//! Appends to the end of the timeline mirror images of all items
+			void appendPingPong();
+
 			void replace( TimelineItemRef item );
 			
 			//! add an action to the sequence
@@ -116,8 +119,10 @@ namespace cinder {
 
 			void	setDefaultAutoRemove( bool defaultAutoRemove ) { mDefaultAutoRemove = defaultAutoRemove; }
 			bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
-			
+
 		  protected:
+			virtual void reverse();
+			virtual TimelineItemRef cloneReverse() const;
 			virtual void start() {}
 			virtual void loopStart();
 			virtual void update( float absTime );

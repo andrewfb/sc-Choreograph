@@ -24,6 +24,11 @@ namespace cinder
 			if( mFunction )
 				mFunction();
 		}
+		
+		TimelineItemRef Cue::cloneReverse() const
+		{
+			return TimelineItemRef( new Cue( *this ) );
+		}
 	}
 
 }

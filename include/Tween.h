@@ -87,10 +87,21 @@ namespace cinder {
 			bool	isCopyStartValue() { return mCopyStartValue; }
 			
 		  protected:
+			virtual void reverse()
+			{
+				std::swap( mStartValue, mEndValue );
+			}
+			virtual TimelineItemRef	cloneReverse() const
+			{
+				std::shared_ptr<Tween<T> > result( new Tween<T>( *this ) );
+				std::swap( result->mStartValue, result->mEndValue );
+				result->mCopyStartValue = false;
+				return result;
+			}
 			virtual void reset( bool unsetStarted )
 			{
 				TimelineItem::reset( unsetStarted );
-				*(reinterpret_cast<T*>( mTarget ) ) = mStartValue;
+//				*(reinterpret_cast<T*>( mTarget ) ) = mStartValue;
 			}
 			virtual void start()
 			{

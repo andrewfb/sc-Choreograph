@@ -9,9 +9,12 @@
 
 #include "Timeline.h"
 
+#include <vector>
+
 using namespace cinder;
 using namespace cinder::tween;
 typedef std::vector<TimelineItemRef>::iterator s_iter;
+using namespace std;
 
 Timeline::Timeline()
 	: TimelineItem( 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
@@ -54,6 +57,24 @@ void Timeline::clearCompletedTweens()
 		} else {
 			++iter;
 		}
+	}
+	
+	calculateDuration();
+}
+
+void Timeline::appendPingPong()
+{
+	vector<TimelineItemRef> toAppend;
+	
+	float duration = mDuration;
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+		TimelineItemRef cloned = (*iter)->cloneReverse();
+		cloned->mStartTime = duration + ( duration - ( cloned->mStartTime + cloned->mDuration ) );
+		toAppend.push_back( cloned );
+	}
+	
+	for( vector<TimelineItemRef>::const_iterator appIt = toAppend.begin(); appIt != toAppend.end(); ++appIt ) {
+		mItems.push_back( *appIt );
 	}
 	
 	calculateDuration();
@@ -115,6 +136,22 @@ void Timeline::reset( bool unsetStarted )
 void Timeline::loopStart()
 {
 	reset( false );
+}
+
+void Timeline::reverse()
+{
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter )
+		(*iter)->reverse();
+}
+
+TimelineItemRef Timeline::cloneReverse() const
+{
+	Timeline *result = new Timeline( *this );
+	for( s_iter iter = result->mItems.begin(); iter != result->mItems.end(); ++iter ) {
+		(*iter)->reverse();
+		(*iter)->mStartTime = mDuration + ( mDuration - ( (*iter)->mStartTime + (*iter)->mDuration ) );		
+	}
+	return TimelineItemRef( result );
 }
 
 void Timeline::update( float absTime )

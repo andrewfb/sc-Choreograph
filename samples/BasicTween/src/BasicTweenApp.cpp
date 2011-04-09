@@ -91,8 +91,8 @@ void BasicTweenApp::setup()
 	
 	// create subtimeline
 	mSubBoxes[0] = Box( Color( 0.2, 0.8, 0 ), Vec2f( 50, getWindowHeight() - 50 ), Vec2f( 30, 30 ) );
-	mSubBoxes[1] = Box( Color( 0.3, 0.7, 0.15 ), Vec2f( 150, getWindowHeight() - 50 ), Vec2f( 30, 30 ) );
-	mSubBoxes[2] = Box( Color( 0.4, 0.6, 0.3 ), Vec2f( 250, getWindowHeight() - 50 ), Vec2f( 30, 30 ) );	
+	mSubBoxes[1] = Box( Color( 0.3, 0.7, 0.15 ), Vec2f( 150, getWindowHeight() - 60 ), Vec2f( 30, 30 ) );
+	mSubBoxes[2] = Box( Color( 0.4, 0.6, 0.3 ), Vec2f( 250, getWindowHeight() - 70 ), Vec2f( 30, 30 ) );	
 	
 	mSubtimeline = Timeline::create();
 	mSubtimeline->setDefaultAutoRemove( false );
@@ -100,6 +100,7 @@ void BasicTweenApp::setup()
 TweenRef<float> temp = mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 1 );
 temp->setUpdateFn( printFloat );
 	mSubtimeline->append<float>( &mSubBoxes[2].mPos.y, 50.0f, 1 );
+	mSubtimeline->appendPingPong();
 	mSubtimeline->setLoop();
 	
 	mSequence.add( mSubtimeline );

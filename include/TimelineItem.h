@@ -14,6 +14,8 @@ namespace cinder
 {
 	namespace tween
 	{
+		typedef std::shared_ptr<class TimelineItem>	TimelineItemRef;
+
 		//! Base interface for anything that can go on a Timeline
 		class TimelineItem
 		{
@@ -23,6 +25,10 @@ namespace cinder
 			virtual ~TimelineItem() {}
 			
 			void* getTarget() const { return mTarget; }
+
+			//! Creates a cloned item which runs in reverse relative to a timeline of duration \a timelineDuration
+			virtual void				reverse() = 0;
+			virtual TimelineItemRef		cloneReverse() const = 0;
 			
 			//! go to a specific time
 			void stepTo( float time );
@@ -74,7 +80,5 @@ namespace cinder
 			
 			friend class Timeline;
 		};
-		
-		typedef std::shared_ptr<TimelineItem>	TimelineItemRef;
 	}
 }
