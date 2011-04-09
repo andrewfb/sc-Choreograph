@@ -57,6 +57,10 @@ public:
 	ColorA mColor;
 	Timeline mSequence;
 	Box		mBox;
+	
+	// subtimeline
+	TimelineRef		mSubtimeline;
+	Box				mSubBoxes[3];
 };
 
 void BasicTweenApp::prepareSettings(Settings *settings)
@@ -79,6 +83,20 @@ void BasicTweenApp::setup()
 	TimelineItemRef cue = mSequence.add( std::bind( &BasicTweenApp::cueExample, this ), 2.0 );
 	cue->setDuration( 1 );
 	cue->setLoop();
+	
+	// create subtimeline
+	mSubBoxes[0] = Box( Color( 0.2, 0.8, 0 ), Vec2f( 50, getWindowHeight() - 50 ), Vec2f( 30, 30 ) );
+	mSubBoxes[1] = Box( Color( 0.3, 0.7, 0.15 ), Vec2f( 150, getWindowHeight() - 50 ), Vec2f( 30, 30 ) );
+	mSubBoxes[2] = Box( Color( 0.4, 0.6, 0.3 ), Vec2f( 250, getWindowHeight() - 50 ), Vec2f( 30, 30 ) );	
+	
+	mSubtimeline = Timeline::create();
+	mSubtimeline->setDefaultAutoRemove( false );
+	mSubtimeline->append<float>( &mSubBoxes[0].mPos.y, 50.0f, 2 );
+	mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 2 )->delay( -1 );	
+	mSubtimeline->append<float>( &mSubBoxes[2].mPos.y, 50.0f, 2 )->delay( -1 );
+	mSubtimeline->setLoop();
+	
+	mSequence.add( mSubtimeline );
 }
 
 void BasicTweenApp::update()
@@ -100,6 +118,9 @@ void BasicTweenApp::draw()
 	gl::drawSolidCircle( mPos, 15.0f );
 
 	mBox.draw();
+	
+	for( int i = 0; i < 3; ++i )
+		mSubBoxes[i].draw();
 }
 
 void BasicTweenApp::cueExample()
@@ -158,7 +179,7 @@ void boxDone( Box *box )
 
 void BasicTweenApp::tweenToMouse()
 {
-console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
+console() << "entering: " << mSequence.getNumItems() << "tweens" << std::endl;
 	Vec2f mousePos = getMousePos();
 	TweenRef<Vec2f> posTween = mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
 	posTween->delay( 0.5f );
@@ -175,7 +196,7 @@ console() << "entering: " << mSequence.getNumTweens() << "tweens" << std::endl;
 //	boxTween->setAutoRemove();
 	boxTween->setPingPong();
 	
-console() << mSequence.getNumTweens() << "tweens lasting " << mSequence.getDuration() << std::endl;
+console() << mSequence.getNumItems() << "tweens lasting " << mSequence.getDuration() << std::endl;
 }
 
 void cb( float *f )

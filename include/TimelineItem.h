@@ -55,10 +55,14 @@ namespace cinder
 			void	setPingPong( bool pingPong = true ) { mPingPong = pingPong; }
 
 			virtual void start() = 0;
+			virtual void loopStart() {}
 			virtual void update( float relativeTime ) = 0;
 			virtual void complete() = 0;
 			//! Call update() only at the beginning of each loop (for example Cues exhibit require this behavior)
 			virtual bool updateAtLoopStart() { return false; }
+			//! Whether update() receives time ranging from [0,1] (when false) or [0,duration] (when true)
+			virtual bool wantsAbsoluteTime() { return false; }
+			
 		  protected:
 			void	*mTarget;
 			float	mStartTime, mDuration;

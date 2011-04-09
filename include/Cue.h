@@ -26,7 +26,8 @@ namespace cinder
 			std::function<void ()>	getFn() const { return mFunction; }
 			
 			virtual void start() {} // starting is a no-op for Cues
-			virtual void update( float relativeTime );
+			virtual void loopStart();
+			virtual void update( float relativeTime ) {} // update is a no-op for Cues
 			virtual void complete() {} // completion is a no-op for Cues
 			virtual bool updateAtLoopStart() { return true; }
  		  private:

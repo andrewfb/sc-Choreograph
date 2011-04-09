@@ -14,8 +14,8 @@ using namespace cinder::tween;
 typedef std::vector<TimelineItemRef>::iterator s_iter;
 
 Timeline::Timeline()
+	: TimelineItem( 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
 {
-	mCurrentTime = 0;
 }
 
 void Timeline::step( float timestep )
@@ -103,4 +103,7 @@ void Timeline::remove( TimelineItemRef action )
 	calculateDuration();
 }
 
-
+void Timeline::update( float absTime )
+{
+	stepTo( absTime );
+}

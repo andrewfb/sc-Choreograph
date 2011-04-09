@@ -19,9 +19,10 @@ namespace cinder
 		{
 		}
 		
-		void Cue::update( float relativeTime )
+		void Cue::loopStart()
 		{
-			mFunction();
+			if( mFunction )
+				mFunction();
 		}
 	}
 

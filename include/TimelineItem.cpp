@@ -23,44 +23,45 @@ void TimelineItem::stepTo( float newTime )
 	if( mComplete )
 		return;
 	
+	float absTime = newTime - mStartTime;
 	float invDuration = ( mDuration <= 0 ) ? 1 : ( 1 / mDuration );
 	
 	if( newTime >= mStartTime ) {
 		float relTime;
 		if( mPingPong ) {
-			relTime = math<float>::fmod( (newTime - mStartTime) * invDuration, 2 );
+			relTime = math<float>::fmod( absTime * invDuration, 2 );
 			if( relTime > 1 )
 				relTime = 2 - relTime;
 		}
 		else if( mLoop ) {
-			relTime = math<float>::fmod( (newTime - mStartTime) * invDuration, 1 );
+			relTime = math<float>::fmod( absTime * invDuration, 1 );
 		}
 		else
-			relTime = math<float>::min( (newTime - mStartTime) * invDuration, 1 );
+			relTime = math<float>::min( absTime * invDuration, 1 );
 		
 		if( ! mHasStarted ) {
 			mHasStarted = true;
 			start();
+			loopStart();
 		}
+		
+		float time = ( wantsAbsoluteTime() ) ? absTime : relTime;
 		
 		if( mLoop || mPingPong ) {
 			int32_t loopIteration = static_cast<int32_t>( ( newTime - mStartTime ) * invDuration );
-			if( updateAtLoopStart() ) {
-				if( loopIteration != mLastLoopIteration ) {
-					mLastLoopIteration = loopIteration;
-					update( relTime );
-				}
+			if( loopIteration != mLastLoopIteration ) {
+				mLastLoopIteration = loopIteration;
+				loopStart();
+				update( time );
 			}
-			else
-				update( relTime );
 		}
 		else
-			update( relTime );
+			update( time );
 	}
 	if( newTime >= mStartTime + mDuration && ( ! mLoop ) && ( ! mPingPong ) ) {
 		mComplete = true;
 		complete();
 	}
 }
-			
+
 } } // namespace cinder::tween
