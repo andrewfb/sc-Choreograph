@@ -1,10 +1,13 @@
 #include "NetflixRssParser.h"
+#include "Resources.h"
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/TextureFont.h"
 #include "cinder/Xml.h"
 #include "cinder/Text.h"
+#include "cinder/ImageIo.h"
 #include "Timeline.h"
 
 using namespace ci;
@@ -20,15 +23,18 @@ const int	MOVIE_ROWS = 25;
 const int	TOTAL_MOVIES = 100;
 const Vec2f EXPANDED_SIZE( 250, 100 );
 
+gl::TextureFontRef  sTitleFont;
+
+Vec2f floor( Vec2f v )
+{
+	return Vec2f( math<float>::floor( v.x ), math<float>::floor( v.y ) );
+}
+
 class Movie {
   public:
 	Movie( const NetflixMovie &info, Vec2f pos, Vec2f size )
-		: mInfo( info ), mPos( pos ), mSize( size ), mAlpha( 1 ), mTitleOffset( sTitleOffset )
+		: mInfo( info ), mBasePos( pos ), mPos( pos ), mSize( size ), mAlpha( 1 ), mIconAlpha( 0 ), mTitleOffset( sTitleOffset )
 	{
-		TextLayout layout;
-		layout.setColor( ColorA( 0.5f, 0.5f, 0.5f, 1 ) );
-		layout.addLine( info.mTitle );
-		mTitleTexture = gl::Texture( layout.render( true ) );	
 	}
   
 	void draw() {
@@ -36,22 +42,28 @@ class Movie {
 		gl::drawSolidRect( Rectf( mPos, mPos + mSize ) );
 		gl::color( ColorA( 0.7f, 0.7f, 0.7f, mAlpha ) );
 		Rectf inset( Rectf( mPos, mPos + mSize ) );
-		gl::drawStrokedRect( Rectf( inset.getUpperLeft() + Vec2f(2,2), inset.getLowerRight() - Vec2f(2,2)) );
-		gl::color( ColorA( 1, 1, 1, mAlpha ) );		
-		gl::draw( mTitleTexture, mPos + mTitleOffset );
+//		gl::drawStrokedRect( Rectf( inset.getUpperLeft() + Vec2f(2,2), inset.getLowerRight() - Vec2f(2,2)) );
+		if( mIconAlpha > 0 ) {
+			gl::color( ColorA( 1, 1, 1, mIconAlpha ) );
+			gl::draw( sGenericIcon, mPos + Vec2f( 4, 4 ) );
+		}
+		gl::color( ColorA( 0, 0, 0, mAlpha ) );
+		sTitleFont->drawString( mInfo.mTitle, Rectf( floor( mPos + mTitleOffset ), ( mPos + mSize - Vec2f( 2, 0 ) ) ) );
 	}
 
 	bool isPointIn( const Vec2f &pt ) { return Rectf( mPos, mPos + mSize ).contains( pt ); }
 	
-	ci::Vec2f		mPos, mSize;
-	float			mAlpha;
+	ci::Vec2f		mBasePos, mPos, mSize;
+	float			mAlpha, mIconAlpha;
 	ci::Vec2f		mTitleOffset;
 	NetflixMovie	mInfo;
-	gl::Texture		mTitleTexture;
-	
+
+	static gl::Texture	sGenericIcon;
+
 	static Vec2f	sNormalSize, sExpandedSize;
 	static Vec2f	sTitleOffset, sExpandedTitleOffset;
 };
+gl::Texture	Movie::sGenericIcon;
 Vec2f Movie::sNormalSize, Movie::sExpandedSize, Movie::sTitleOffset, Movie::sExpandedTitleOffset;
 
 class NetflixRssApp : public AppBasic {
@@ -79,10 +91,13 @@ void NetflixRssApp::setup()
 {
 	NetflixRssParser parser( Url( "http://rss.netflix.com/Top100RSS" ) );
 
+	sTitleFont = gl::TextureFont::create( Font( "Arial", 16 ) );
+
+	Movie::sGenericIcon = gl::Texture( loadImage( loadResource( RES_FILM_ICON ) ) );
 	Movie::sNormalSize = Vec2f( WINDOW_WIDTH - MOVIE_PADDING, WINDOW_HEIGHT - MOVIE_PADDING ) / Vec2f( MOVIE_COLS, MOVIE_ROWS ) - Vec2f( MOVIE_PADDING, MOVIE_PADDING );
 	Movie::sExpandedSize = Vec2f( 350, 200 );
-	Movie::sTitleOffset = Vec2f( 4, 4 );
-	Movie::sExpandedTitleOffset = Vec2f( 68, 4 );
+	Movie::sTitleOffset = Vec2f( 4, sTitleFont->getAscent() );
+	Movie::sExpandedTitleOffset = Vec2f( 68, sTitleFont->getAscent() );
 	const Vec2f tileOffset = Movie::sNormalSize + Vec2f( MOVIE_PADDING, MOVIE_PADDING );
 	
 	TimelineRef initialFadeTln = Timeline::create();
@@ -94,8 +109,12 @@ void NetflixRssApp::setup()
 		
 console() << parser.getMovies()[m] << std::endl;
 		
-		mMovies.back().mAlpha = 0;
-		initialFadeTln->append( &mMovies.back().mAlpha, 0.0f, 1.0f, 0.5f )->delay( -0.49f );
+		mMovies.back().mAlpha = 0.0;
+		TimelineItemRef movTween = initialFadeTln->add( &mMovies.back().mPos, Vec2f( 0, 0 ), pos, pos.y / getWindowHeight() * 0.5 );
+		movTween->delay( row / 10.0f );
+		movTween = initialFadeTln->append( &mMovies.back().mAlpha, 0.0f, 1.0f, 0.5f );
+		movTween->setStartTime( movTween->getStartTime() );
+		movTween->delay( -0.02f );
 	}
 
 	mTimeline.stepTo( getElapsedSeconds() );
@@ -115,6 +134,8 @@ void NetflixRssApp::mouseMove( MouseEvent event )
 		mTimeline.replace( &mCurrentSelection->mSize.x, Movie::sNormalSize.x, 0.08f );
 		mTimeline.replace( &mCurrentSelection->mSize.y, Movie::sNormalSize.y, 0.08f );
 		mTimeline.replace( &mCurrentSelection->mTitleOffset, Movie::sTitleOffset, 0.08f );
+		mTimeline.replace( &mCurrentSelection->mIconAlpha, 0.0f, 0.04f );
+		mTimeline.replace( &mCurrentSelection->mPos, mCurrentSelection->mBasePos, 0.2f )->delay( 0.1f );		
 	}
 	
 	// find the new selection
@@ -125,6 +146,8 @@ void NetflixRssApp::mouseMove( MouseEvent event )
 			mTimeline.add( &mCurrentSelection->mSize.x, Movie::sExpandedSize.x, 0.2f );
 			mTimeline.add( &mCurrentSelection->mSize.y, Movie::sExpandedSize.y, 0.2f )->delay( 0.1f );
 			mTimeline.add( &mCurrentSelection->mTitleOffset, Movie::sExpandedTitleOffset, 0.2f );
+			mTimeline.add( &mCurrentSelection->mIconAlpha, 0.8f, 0.2f )->delay( 0.1f );
+			mTimeline.add( &mCurrentSelection->mPos, mCurrentSelection->mBasePos + Vec2f( -10, -10 ), 0.2f )->delay( 0.1f );
 			break;
 		}
 	}
@@ -142,7 +165,7 @@ void NetflixRssApp::update()
 void NetflixRssApp::draw()
 {
 	// clear out the window with black
-	gl::enableAlphaBlending();
+	gl::enableAlphaBlending( false );
 	gl::clear( ColorA8u( 185, 9, 11, 255 ) );
 	
 	for( list<Movie>::iterator movIt = mMovies.begin(); movIt != mMovies.end(); ++movIt ) {

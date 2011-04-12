@@ -141,6 +141,7 @@ namespace cinder {
 			{}
 		};
 
+		typedef std::shared_ptr<TweenBase>	TweenBaseRef;
 		
 	} //tween
 } //cinder
