@@ -131,11 +131,11 @@ void NetflixRssApp::mouseMove( MouseEvent event )
 	
 	// mouse has left the current selection
 	if( mCurrentSelection != mMovies.end() ) {
-		mTimeline.replace( &mCurrentSelection->mSize.x, Movie::sNormalSize.x, 0.08f );
-		mTimeline.replace( &mCurrentSelection->mSize.y, Movie::sNormalSize.y, 0.08f );
-		mTimeline.replace( &mCurrentSelection->mTitleOffset, Movie::sTitleOffset, 0.08f );
-		mTimeline.replace( &mCurrentSelection->mIconAlpha, 0.0f, 0.04f );
-		mTimeline.replace( &mCurrentSelection->mPos, mCurrentSelection->mBasePos, 0.2f )->delay( 0.1f );		
+		mTimeline.apply( &mCurrentSelection->mSize.x, Movie::sNormalSize.x, 0.08f );
+		mTimeline.apply( &mCurrentSelection->mSize.y, Movie::sNormalSize.y, 0.08f );
+		mTimeline.apply( &mCurrentSelection->mTitleOffset, Movie::sTitleOffset, 0.08f );
+		mTimeline.apply( &mCurrentSelection->mIconAlpha, 0.0f, 0.04f );
+		mTimeline.apply( &mCurrentSelection->mPos, mCurrentSelection->mBasePos, 0.2f )->delay( 0.1f );		
 	}
 	
 	// find the new selection
@@ -143,11 +143,11 @@ void NetflixRssApp::mouseMove( MouseEvent event )
 	for( list<Movie>::iterator movIt = mMovies.begin(); movIt != mMovies.end(); ++movIt ) {
 		if( movIt->isPointIn( event.getPos() ) ) {
 			mCurrentSelection = movIt;
-			mTimeline.add( &mCurrentSelection->mSize.x, Movie::sExpandedSize.x, 0.2f );
-			mTimeline.add( &mCurrentSelection->mSize.y, Movie::sExpandedSize.y, 0.2f )->delay( 0.1f );
-			mTimeline.add( &mCurrentSelection->mTitleOffset, Movie::sExpandedTitleOffset, 0.2f );
-			mTimeline.add( &mCurrentSelection->mIconAlpha, 0.8f, 0.2f )->delay( 0.1f );
-			mTimeline.add( &mCurrentSelection->mPos, mCurrentSelection->mBasePos + Vec2f( -10, -10 ), 0.2f )->delay( 0.1f );
+			mTimeline.apply( &mCurrentSelection->mSize.x, Movie::sExpandedSize.x, 0.2f );
+			mTimeline.apply( &mCurrentSelection->mSize.y, Movie::sExpandedSize.y, 0.2f )->delay( 0.1f );
+			mTimeline.apply( &mCurrentSelection->mTitleOffset, Movie::sExpandedTitleOffset, 0.2f );
+			mTimeline.apply( &mCurrentSelection->mIconAlpha, 0.8f, 0.2f )->delay( 0.1f );
+			mTimeline.apply( &mCurrentSelection->mPos, mCurrentSelection->mBasePos + Vec2f( -10, -10 ), 0.2f )->delay( 0.1f );
 			break;
 		}
 	}

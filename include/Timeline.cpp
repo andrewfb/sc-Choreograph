@@ -41,22 +41,19 @@ void Timeline::stepTo( float absoluteTime )
 	}
 }
 
-void Timeline::clearSequence()
+void Timeline::clear()
 {
 	mItems.clear();	
 }
 
-void Timeline::clearCompletedTweens()
+void Timeline::clearCompleted()
 {
-	s_iter iter = mItems.begin();
-	
+	s_iter iter = mItems.begin();	
 	while (iter != mItems.end()) {		
 		if( (**iter).isComplete() )
-		{
 			iter = mItems.erase(iter);
-		} else {
+		else
 			++iter;
-		}
 	}
 	
 	calculateDuration();
@@ -80,7 +77,7 @@ void Timeline::appendPingPong()
 	calculateDuration();
 }
 
-void Timeline::replace( TimelineItemRef item )
+void Timeline::apply( TimelineItemRef item )
 {
 	TimelineItemRef existingAction = find( item->getTarget() );
 	if( existingAction )
