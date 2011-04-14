@@ -17,7 +17,7 @@ namespace cinder
 		typedef std::shared_ptr<class TimelineItem>	TimelineItemRef;
 
 		//! Base interface for anything that can go on a Timeline
-		class TimelineItem
+		class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 		{
 		  public:
 			TimelineItem( class Timeline *parent = 0) : mParent( parent ), mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
@@ -40,8 +40,15 @@ namespace cinder
 			//! set the action's start time
 			void setStartTime( float time );
 			void setDuration( float duration );
-			//! push back the action's start time
-			void delay( float amt ) { setStartTime( mStartTime + amt ); }
+
+			//! Pushes back the action's start time by \a amt. Returns a reference to \a this
+			TimelineItemRef startTime( float newTime ) { setStartTime( newTime ); return shared_from_this(); }
+			//! Pushes back the action's start time by \a amt. Returns a reference to \a this
+			TimelineItemRef delay( float amt ) { setStartTime( mStartTime + amt ); return shared_from_this(); }
+			//! Sets the item's duration to \a newDuration. Returns a reference to \a this
+			TimelineItemRef duration( float newDuration ) { setDuration( newDuration ); return shared_from_this(); }
+
+
 			//! Sets the time to zero, not completed, and if \a unsetStarted, marks the tweens has not started
 			virtual void reset( bool unsetStarted = false ) { if( unsetStarted ) mHasStarted = false; mComplete = false; }
 			
