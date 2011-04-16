@@ -12,16 +12,16 @@
 
 #pragma once
 
-#include "Easing.h"
 #include "TimelineItem.h"
 
 #include "cinder/Cinder.h"
 #include "cinder/CinderMath.h"
+#include "cinder/Easing.h"
 #include "cinder/Function.h"
 
 namespace cinder {
 	namespace tween {
-		typedef float(*EaseFn)( float );
+		typedef std::function<float (float)> EaseFn;
 		
 		template<typename T>
 		T lerp( const T &start, const T &end, float time )
@@ -32,7 +32,7 @@ namespace cinder {
 		//Our templated tween design
 		class TweenBase : public TimelineItem {
 		  public:
-			TweenBase( void *target, bool copyStartValue, float startTime, float duration, EaseFn easeFunction = Quadratic::easeInOut );
+			TweenBase( void *target, bool copyStartValue, float startTime, float duration, EaseFn easeFunction = easeNone );
 			virtual ~TweenBase() {}
 
 			//! change how the tween moves through time
@@ -55,13 +55,13 @@ namespace cinder {
 
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween( T *target, T endValue, float startTime, float duration,
-					EaseFn easeFunction = Quadratic::easeInOut, LerpFn lerpFunction = &lerp<T> )
+					EaseFn easeFunction = easeNone, LerpFn lerpFunction = &lerp<T> )
 				: TweenBase( target, true, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
 			
 			Tween( T *target, T startValue, T endValue, float startTime, float duration,
-					EaseFn easeFunction = Quadratic::easeInOut, LerpFn lerpFunction = &lerp<T> )
+					EaseFn easeFunction = easeNone, LerpFn lerpFunction = &lerp<T> )
 				: TweenBase( target, false, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}

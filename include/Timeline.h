@@ -47,7 +47,7 @@ namespace cinder {
 			
 			//! Create a new tween and adds it to the timeline's current time
 			template<typename T>
-			TweenRef<T> add( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
+			TweenRef<T> add( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
 			{
 				TweenRef<T> newTween( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
@@ -57,7 +57,7 @@ namespace cinder {
 			
 			//! Create a new tween and adds it to the timeline's current time
 			template<typename T>
-			TweenRef<T> add( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
+			TweenRef<T> add( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
 			{
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
@@ -67,7 +67,7 @@ namespace cinder {
 
 			//! Replaces any existing tweens on the \a target with a new tween at the timeline's current time
 			template<typename T>
-			TweenRef<T> apply( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
+			TweenRef<T> apply( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
 			{
 				TweenRef<T> newTween( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
@@ -77,7 +77,7 @@ namespace cinder {
 			
 			//! Replaces any existing tweens on the \a target with a new tween at the timeline's current time
 			template<typename T>
-			TweenRef<T> apply( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> apply( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
 				apply( newTween );
@@ -86,7 +86,7 @@ namespace cinder {
 
 			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration
 			template<typename T>
-			TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
 				insert( newTween );
@@ -95,7 +95,7 @@ namespace cinder {
 			
 			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration
 			template<typename T>
-			TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
 				insert( newTween );

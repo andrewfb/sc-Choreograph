@@ -185,15 +185,15 @@ void BasicTweenApp::tweenToMouse()
 {
 console() << "entering: " << mSequence.getNumItems() << "tweens" << std::endl;
 	Vec2f mousePos = getMousePos();
-	TweenRef<Vec2f> posTween = mSequence.apply( &mPos, mousePos, 1.25, Back::easeOut );
+	TweenRef<Vec2f> posTween = mSequence.apply( &mPos, mousePos, 1.25, EaseOutBack() );
 	posTween->delay( 0.5f );
 
 	// Tween our floats
-	mSequence.apply( &mX, mousePos.x, 2.0, Quadratic::easeInOut );
-	mSequence.apply( &mY, mousePos.y, 1.5, Quadratic::easeInOut );
+	mSequence.apply( &mX, mousePos.x, 2.0f, EaseInOutQuad() );
+	mSequence.apply( &mY, mousePos.y, 1.5f, EaseInOutQuad() );
 	
 	// make a new random box and tween to that
-	TweenRef<Box> boxTween = mSequence.append( &mBox, randomBox(), 3.0, Quadratic::easeInOut, boxLerp );
+	TweenRef<Box> boxTween = mSequence.append( &mBox, randomBox(), 3.0, EaseInOutQuad(), boxLerp );
 	boxTween->setStartFn( boxStart );
 	boxTween->setUpdateFn( printBox );
 	boxTween->setCompletionFn( boxDone );

@@ -30,7 +30,6 @@
 		008D8C2A1350211700CDE0C5 /* Choreograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choreograph.h; sourceTree = "<group>"; };
 		008D8C2B1350211700CDE0C5 /* Cue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cue.cpp; sourceTree = "<group>"; };
 		008D8C2C1350211700CDE0C5 /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
-		008D8C2D1350211700CDE0C5 /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
 		008D8C2E1350211700CDE0C5 /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
 		008D8C2F1350211700CDE0C5 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
 		008D8C301350211700CDE0C5 /* TimelineItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimelineItem.cpp; sourceTree = "<group>"; };
@@ -103,7 +102,6 @@
 				008D8C2A1350211700CDE0C5 /* Choreograph.h */,
 				008D8C2B1350211700CDE0C5 /* Cue.cpp */,
 				008D8C2C1350211700CDE0C5 /* Cue.h */,
-				008D8C2D1350211700CDE0C5 /* Easing.h */,
 				008D8C2E1350211700CDE0C5 /* Timeline.cpp */,
 				008D8C2F1350211700CDE0C5 /* Timeline.h */,
 				008D8C301350211700CDE0C5 /* TimelineItem.cpp */,

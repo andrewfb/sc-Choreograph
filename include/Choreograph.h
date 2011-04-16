@@ -15,4 +15,3 @@
 #include "Timeline.h"
 #include "Tween.h"
 #include "Cue.h"
-#include "Easing.h"
