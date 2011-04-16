@@ -36,7 +36,7 @@ namespace cinder {
 			
 			float	getCurrentTime() const { return mCurrentTime; }
 			
-			//! add a cue to the Sequence
+			//! add a cue to the Timeline add the start-time \a atTime
 			CueRef add( std::function<void ()> action, float atTime )
 			{
 				CueRef newCue( new Cue( action, atTime ) );
@@ -45,7 +45,7 @@ namespace cinder {
 				return newCue;
 			}
 			
-			//! create a new tween and add it to the list
+			//! Create a new tween and adds it to the timeline's current time
 			template<typename T>
 			TweenRef<T> add( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
 			{
@@ -55,7 +55,7 @@ namespace cinder {
 				return newTween;
 			}
 			
-			//! create a new tween
+			//! Create a new tween and adds it to the timeline's current time
 			template<typename T>
 			TweenRef<T> add( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
 			{
@@ -65,25 +65,26 @@ namespace cinder {
 				return newTween;
 			}
 
-			//! replace an existing tween
+			//! Replaces any existing tweens on the \a target with a new tween at the timeline's current time
 			template<typename T>
-			TweenRef<T> replace( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
+			TweenRef<T> apply( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> )
 			{
 				TweenRef<T> newTween( new Tween<T>( target, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
-				replace( newTween );
+				apply( newTween );
 				return newTween;
 			}
 			
-			//! replace an existing tween
+			//! Replaces any existing tweens on the \a target with a new tween at the timeline's current time
 			template<typename T>
-			TweenRef<T> replace( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
+			TweenRef<T> apply( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, mCurrentTime, duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
-				replace( newTween );
+				apply( newTween );
 				return newTween;
 			}
 
+			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration
 			template<typename T>
 			TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
@@ -91,7 +92,8 @@ namespace cinder {
 				insert( newTween );
 				return newTween;
 			}
-
+			
+			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration
 			template<typename T>
 			TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = Quadratic::easeInOut, typename Tween<T>::LerpFn lerpFunction = &lerp<T> ) {
 				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
@@ -103,7 +105,8 @@ namespace cinder {
 			//! Appends to the end of the timeline mirror images of all items
 			void appendPingPong();
 
-			void replace( TimelineItemRef item );
+			//! Replaces any existing TimelineItems that match \a item's target and adds \a item to the timeline
+			void apply( TimelineItemRef item );
 			
 			//! add an item to the timeline at the current time
 			void add( TimelineItemRef item );
@@ -112,20 +115,26 @@ namespace cinder {
 			//! adds an item to the timeline, setting its startTime to be at \a atTime
 			void insert( TimelineItemRef item, float atTime ) { item->mStartTime = atTime; insert( item ); }
 
-			size_t				getNumItems() const { return mItems.size(); }			
+			//! Returns the number of items in the Timeline
+			size_t				getNumItems() const { return mItems.size(); }
+			//! Returns the first item in the timeline the target of which matches \a target
 			TimelineItemRef		find( void *target );
-			void				remove( TimelineItemRef tween );
+			//! Removes the TimelineItem \a item from the Timeline
+			void				remove( TimelineItemRef item );
 			
-			//! remove all tweens from the Sequence
-			void clearSequence();
-			//! remove completed tweens from the Sequence
-			void clearCompletedTweens();
-			//! Sets the time to zero, all tweens as not completed, and if \a unsetStarted, marks the tweens has not started
+			//! Remove all tweens from the Timeline
+			void clear();
+			//! Remove completed items from the Timeline
+			void clearCompleted();
+			//! Sets the time to zero, all tweens as not completed, and if \a unsetStarted, marks the tweens as not started
 			void reset( bool unsetStarted = false );
 
+			//! Sets the default \a autoRemove value for all future TimelineItems added to the Timeline
 			void	setDefaultAutoRemove( bool defaultAutoRemove ) { mDefaultAutoRemove = defaultAutoRemove; }
+			//! Returns the default \a autoRemove value for all future TimelineItems added to the Timeline
 			bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
 
+			//! Call this to notify the Timeline if the \a item's start-time or duration has changed
 			void	timeChanged( TimelineItem *item );
 
 		  protected:
