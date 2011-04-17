@@ -68,6 +68,9 @@ namespace cinder {
 			TweenRef( Tween<T> *tween )
 				: std::shared_ptr<Tween<T> >( tween )
 			{}
+			TweenRef()
+				: std::shared_ptr<Tween<T> >()
+			{}
 		};
 				
 		template<typename T>
