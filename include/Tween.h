@@ -26,7 +26,7 @@ namespace cinder {
 		typedef std::function<float (float)> EaseFn;
 		
 		template<typename T>
-		T lerp( const T &start, const T &end, float time )
+		T tweenLerp( const T &start, const T &end, float time )
 		{
 			return start * ( 1 - time ) + end * time;
 		}
@@ -68,13 +68,13 @@ namespace cinder {
 
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween( T *target, T endValue, float startTime, float duration,
-					EaseFn easeFunction = easeNone, LerpFn lerpFunction = &lerp<T> )
+					EaseFn easeFunction = easeNone, LerpFn lerpFunction = &tweenLerp<T> )
 				: TweenBase( target, true, startTime, duration, easeFunction ), mStartValue( *target ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
 			
 			Tween( T *target, T startValue, T endValue, float startTime, float duration,
-					EaseFn easeFunction = easeNone, LerpFn lerpFunction = &lerp<T> )
+					EaseFn easeFunction = easeNone, LerpFn lerpFunction = &tweenLerp<T> )
 				: TweenBase( target, false, startTime, duration, easeFunction ), mStartValue( startValue ), mEndValue( endValue ), mLerpFunction( lerpFunction )
 			{
 			}
