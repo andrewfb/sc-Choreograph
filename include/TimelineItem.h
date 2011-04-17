@@ -70,6 +70,9 @@ namespace cinder
 			//! Returns the time of the item's competion, equivalent to getStartTime() + getDuration().
 			float			getEndTime() const { return mStartTime + mDuration; }
 
+
+			//! Removes the item from its parent Timeline
+			void remove();
 			//! Marks the item as not completed, and if \a unsetStarted, marks the item as not started
 			virtual void reset( bool unsetStarted = false ) { if( unsetStarted ) mHasStarted = false; mComplete = false; }
 			

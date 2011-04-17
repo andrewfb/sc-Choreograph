@@ -41,6 +41,12 @@ TimelineItem::TimelineItem( Timeline *parent, void *target, float startTime, flo
 {
 }
 
+void TimelineItem::remove()
+{
+	if( mParent )
+		mParent->remove( shared_from_this() );
+}
+
 void TimelineItem::stepTo( float newTime )
 {
 	if( mComplete )
