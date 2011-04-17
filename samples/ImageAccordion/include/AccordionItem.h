@@ -8,8 +8,9 @@
  */
 
 #pragma once
-#include "cinder/Color.h";
-#include "cinder/Rect.h";
+
+#include "cinder/Color.h"
+#include "cinder/Rect.h"
 #include "cinder/Vector.h"
 #include <vector>
 
