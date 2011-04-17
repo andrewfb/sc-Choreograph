@@ -76,7 +76,7 @@ std::cout << "v: " << *v;
 
 void startFloat( float *v )
 {
-std::cout << "Start: " << *v;
+std::cout << "Start: " << *v << std::endl;
 }
 
 void BasicTweenApp::setup()
