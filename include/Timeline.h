@@ -97,19 +97,19 @@ namespace cinder {
 				return newTween;
 			}
 
-			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration
+			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration or the current time, whichever is greater
 			template<typename T>
 			TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
-				TweenRef<T> newTween( new Tween<T>( target, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
+				TweenRef<T> newTween( new Tween<T>( target, endValue, std::max( getDuration(), mCurrentTime ), duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
 				insert( newTween );
 				return newTween;
 			}
 			
-			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration
+			//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration or the current time, whichever is greater
 			template<typename T>
 			TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
-				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, getDuration(), duration, easeFunction, lerpFunction ) );
+				TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, std::max( getDuration(), mCurrentTime ), duration, easeFunction, lerpFunction ) );
 				newTween->setAutoRemove( mDefaultAutoRemove );
 				insert( newTween );
 				return newTween;
