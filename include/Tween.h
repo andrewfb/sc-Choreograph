@@ -21,6 +21,8 @@
 
 namespace cinder {
 	namespace tween {
+		template<typename T>
+		class Tween;
 		typedef std::function<float (float)> EaseFn;
 		
 		template<typename T>
@@ -43,6 +45,17 @@ namespace cinder {
 			EaseFn		mEaseFunction;
 			float		mDuration;
 			bool		mCopyStartValue;
+		};
+
+		template<typename T>
+		class TweenRef : public std::shared_ptr<Tween<T> > {
+		  public:
+			TweenRef( const std::shared_ptr<Tween<T> > &sp )
+				: std::shared_ptr<Tween<T> >( sp )
+			{}
+			TweenRef( Tween<T> *tween )
+				: std::shared_ptr<Tween<T> >( tween )
+			{}
 		};
 				
 		template<typename T>
@@ -68,15 +81,17 @@ namespace cinder {
 			
 			virtual ~Tween() {}
 			
-			void setUpdateFn( std::function<void (T*)> updateFn ) {
-				mUpdateFunction = updateFn;
-			}
-
 			void			setStartFn( StartFn startFunction ) { mStartFunction = startFunction; }
 			StartFn			getStartFn() const { return mStartFunction; }
-						
+			TweenRef<T>		startFn( StartFn startFunction ) { mStartFunction = startFunction; return getThisRef(); }
+			
+			void			setUpdateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; }									
+			UpdateFn		getUpdateFn() const { return mUpdateFunction; }
+			TweenRef<T>		updateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; return getThisRef(); }
+																																							
 			void			setCompletionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFunction; }
 			CompletionFn	getCompletionFn() const { return mCompletionFunction; }
+			TweenRef<T>		completionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFn; return getThisRef(); }
 			
 			//! Returns the starting value for the tween. If the tween will copy its target's value upon starting (isCopyStartValue()) and the tween has not started, this returns the value of its target when the tween was created
 			T	getStartValue() const { return mStartValue; }
@@ -85,8 +100,21 @@ namespace cinder {
 			
 			//! Returns whether the tween will copy its target's value upon starting
 			bool	isCopyStartValue() { return mCopyStartValue; }
+
+			// these override their equivalents in TimelineItem so that we can return a TweenRef<T> instead of TimelineItemRef
+			//! Pushes back the tween's start time by \a amt. Returns a reference to \a this
+			TweenRef<T> startTime( float newTime ) { setStartTime( newTime ); return getThisRef(); }
+			//! Pushes back the tween's start time by \a amt. Returns a reference to \a this
+			TweenRef<T> delay( float amt ) { setStartTime( mStartTime + amt ); return getThisRef(); }
+			//! Sets the tween's duration to \a newDuration. Returns a reference to \a this
+			TweenRef<T> duration( float newDuration ) { setDuration( newDuration ); return getThisRef(); }			
 			
 		  protected:
+			TweenRef<T> getThisRef()
+			{
+				return TweenRef<T>( std::static_pointer_cast<Tween<T> >( shared_from_this() ) );
+			}
+
 			virtual void reverse()
 			{
 				std::swap( mStartValue, mEndValue );
@@ -130,17 +158,6 @@ namespace cinder {
 			UpdateFn			mUpdateFunction;
 		};
 		
-		template<typename T = void*>
-		class TweenRef : public std::shared_ptr<Tween<T> > {
-		  public:
-			TweenRef( const std::shared_ptr< Tween<T> > &sp )
-				: std::shared_ptr<Tween<T> >( sp )
-			{}
-			TweenRef( Tween<T> *tween )
-				: std::shared_ptr<Tween<T> >( tween )
-			{}
-		};
-
 		typedef std::shared_ptr<TweenBase>	TweenBaseRef;
 		
 	} //tween

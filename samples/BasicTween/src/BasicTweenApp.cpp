@@ -74,6 +74,11 @@ void printFloat( float *v )
 std::cout << "v: " << *v;
 }
 
+void startFloat( float *v )
+{
+std::cout << "Start: " << *v;
+}
+
 void BasicTweenApp::setup()
 {	
 	mX = getWindowWidth()/2;
@@ -97,7 +102,7 @@ void BasicTweenApp::setup()
 	mSubtimeline = Timeline::create();
 	mSubtimeline->setDefaultAutoRemove( false );
 	mSubtimeline->append<float>( &mSubBoxes[0].mPos.y, 50.0f, 1 );
-TweenRef<float> temp = mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 1 );
+TweenRef<float> temp = mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 1 )->startFn( startFloat )->delay( 0.5f );
 temp->setUpdateFn( printFloat );
 	mSubtimeline->append<float>( &mSubBoxes[2].mPos.y, 50.0f, 1 );
 	mSubtimeline->appendPingPong();
