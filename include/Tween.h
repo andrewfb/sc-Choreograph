@@ -108,17 +108,20 @@ namespace cinder {
 			TweenRef<T> delay( float amt ) { setStartTime( mStartTime + amt ); return getThisRef(); }
 			//! Sets the tween's duration to \a newDuration. Returns a reference to \a this
 			TweenRef<T> duration( float newDuration ) { setDuration( newDuration ); return getThisRef(); }			
+			//! Sets whether the item will remove itself from the Timeline when it is complete
+			TweenRef<T> autoRemove( bool autoRmv = true ) { setAutoRemove( autoRmv ); return getThisRef(); }
+			//! Sets whether the item starts over when it is complete
+			TimelineItemRef loop( bool doLoop = true ) { setLoop( doLoop ); return getThisRef(); }
 			
-		  protected:
-			TweenRef<T> getThisRef()
-			{
-				return TweenRef<T>( std::static_pointer_cast<Tween<T> >( shared_from_this() ) );
-			}
+			//! Returns a TweenRef<T> to \a this
+			TweenRef<T> getThisRef(){ return TweenRef<T>( std::static_pointer_cast<Tween<T> >( shared_from_this() ) ); }
 
+		  protected:
 			virtual void reverse()
 			{
 				std::swap( mStartValue, mEndValue );
 			}
+			
 			virtual TimelineItemRef	cloneReverse() const
 			{
 				std::shared_ptr<Tween<T> > result( new Tween<T>( *this ) );
@@ -126,11 +129,12 @@ namespace cinder {
 				result->mCopyStartValue = false;
 				return result;
 			}
+			
 			virtual void reset( bool unsetStarted )
 			{
 				TimelineItem::reset( unsetStarted );
-//				*(reinterpret_cast<T*>( mTarget ) ) = mStartValue;
 			}
+			
 			virtual void start()
 			{
 				if( mCopyStartValue )
@@ -138,12 +142,14 @@ namespace cinder {
 				if( mStartFunction )
 					mStartFunction( reinterpret_cast<T*>(mTarget) );
 			}
+			
 			virtual void update( float relativeTime )
 			{
 				*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 				if( mUpdateFunction )
 					mUpdateFunction( reinterpret_cast<T*>(mTarget) );
 			}
+			
 			virtual void complete()
 			{
 				if( mCompletionFunction )

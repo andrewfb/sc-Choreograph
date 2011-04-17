@@ -144,7 +144,6 @@ namespace cinder {
 			virtual void loopStart();
 			virtual void update( float absTime );
 			virtual void complete() {}
-			virtual bool wantsAbsoluteTime() { return true; }
 
 			void							calculateDuration();
 		

@@ -20,59 +20,66 @@ namespace cinder
 		class TimelineItem : public std::enable_shared_from_this<TimelineItem>
 		{
 		  public:
-			TimelineItem( class Timeline *parent = 0) : mParent( parent ), mTarget( 0 ), mDuration( 0 ), mAutoRemove( true ) {}
+			TimelineItem( class Timeline *parent = 0 );
 			TimelineItem( class Timeline *parent, void *target, float startTime, float duration );
 			virtual ~TimelineItem() {}
 			
+			//! Returns the item's target pointer
 			void* getTarget() const { return mTarget; }
 
-			//! Creates a cloned item which runs in reverse relative to a timeline of duration \a timelineDuration
-			virtual void				reverse() = 0;
-			virtual TimelineItemRef		cloneReverse() const = 0;
-			
-			//! go to a specific time
-			void stepTo( float time );
-			
-			float getStartTime() const { return mStartTime; }
-			float getEndTime() const { return mStartTime + mDuration; }
-			float getDuration() const { return mDuration; }			
-			
-			//! set the action's start time
-			void setStartTime( float time );
-			void setDuration( float duration );
-
-			//! Pushes back the action's start time by \a amt. Returns a reference to \a this
+			//! Returns the item's start time
+			float			getStartTime() const { return mStartTime; }
+			//! Set the items's start time to \a newTime
+			void			setStartTime( float newTime );
+			//! Set the items's start time to \a newTime. Returns a reference to \a this
 			TimelineItemRef startTime( float newTime ) { setStartTime( newTime ); return shared_from_this(); }
-			//! Pushes back the action's start time by \a amt. Returns a reference to \a this
+
+			//! Pushes back the item's start time by \a amt. Returns a reference to \a this
 			TimelineItemRef delay( float amt ) { setStartTime( mStartTime + amt ); return shared_from_this(); }
+
+			//! Returns the item's duration
+			float			getDuration() const { return mDuration; }			
+			//! Sets the item's duration to \a newDuration.
+			void			setDuration( float newDuration );
 			//! Sets the item's duration to \a newDuration. Returns a reference to \a this
 			TimelineItemRef duration( float newDuration ) { setDuration( newDuration ); return shared_from_this(); }
 
+			//! Returns whether the item starts over when it is complete
+			bool			getLoop() const { return mLoop; }
+			//! Sets whether the item starts over when it is complete
+			void			setLoop( bool doLoop = true ) { mLoop = doLoop; }
+			//! Sets whether the item starts over when it is complete. Returns a reference to \a this
+			TimelineItemRef loop( bool doLoop = true ) { setLoop( doLoop ); return shared_from_this(); }
 
-			//! Sets the time to zero, not completed, and if \a unsetStarted, marks the tweens has not started
+			//! Returns the time of the item's competion, equivalent to getStartTime() + getDuration().
+			float			getEndTime() const { return mStartTime + mDuration; }
+
+			//! Marks the item as not completed, and if \a unsetStarted, marks the item as not started
 			virtual void reset( bool unsetStarted = false ) { if( unsetStarted ) mHasStarted = false; mComplete = false; }
 			
-			//! Has the item begun?
+			//! Returns whether the item has started
 			bool hasStarted() const { return mHasStarted; }			
-			//! Has the item finished?
+			//! Returns whether the item has completed
 			bool isComplete() { return mComplete; }
 			
 			//! Should the item remove itself from the Timeline when it is complete
-			bool	isAutoRemove() const { return mAutoRemove; }
+			bool	getAutoRemove() const { return mAutoRemove; }
 			//! Sets whether the item will remove itself from the Timeline when it is complete
 			void	setAutoRemove( bool autoRemove = true ) { mAutoRemove = autoRemove; }
+			//! Sets whether the item will remove itself from the Timeline when it is complete
+			TimelineItemRef autoRemove( bool autoRmv = true ) { mAutoRemove = autoRmv; return shared_from_this(); }
 			
-			bool	isLoop() const { return mLoop; }
-			void	setLoop( bool loop = true ) { mLoop = loop; }
-
 			virtual void start() = 0;
 			virtual void loopStart() {}
 			virtual void update( float relativeTime ) = 0;
 			virtual void complete() = 0;
 			//! Call update() only at the beginning of each loop (for example Cues exhibit require this behavior)
 			virtual bool updateAtLoopStart() { return false; }
-			//! Whether update() receives time ranging from [0,1] (when false) or [0,duration] (when true)
-			virtual bool wantsAbsoluteTime() { return false; }
+			virtual void				reverse() = 0;
+			//! Creates a cloned item which runs in reverse relative to a timeline of duration \a timelineDuration
+			virtual TimelineItemRef		cloneReverse() const = 0;
+			//! go to a specific time, generally called by the parent Timeline only.
+			void stepTo( float time );
 			
 		  protected:
 			//! Converts time from absolute to absolute based on item's looping attributes
@@ -81,13 +88,16 @@ namespace cinder
 			class Timeline	*mParent;
 			
 			void	*mTarget;
-			float	mStartTime, mDuration;
+			float	mStartTime;
 			bool	mHasStarted, mComplete;
 			bool	mLoop;
+			bool	mUseAbsoluteTime;
 			bool	mAutoRemove;
 			int32_t	mLastLoopIteration;
 			
 			friend class Timeline;
+		  private:
+			float	mDuration, mInvDuration;
 		};
 	}
 }

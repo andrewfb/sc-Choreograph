@@ -14,9 +14,15 @@
 
 namespace cinder { namespace tween { 
 
+TimelineItem::TimelineItem( class Timeline *parent )
+	: mParent( parent ), mTarget( 0 ), mStartTime( 0 ), mDuration( 0 ), mInvDuration( 0 ), mHasStarted( false ),
+		mComplete( false ), mAutoRemove( true ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
+{
+}
+
 TimelineItem::TimelineItem( Timeline *parent, void *target, float startTime, float duration )
-	: mParent( parent ), mTarget( target ), mStartTime( startTime ), mDuration( duration ), mHasStarted( false ),
-		mComplete( false ), mAutoRemove( true ), mLoop( false ), mLastLoopIteration( -1 )
+	: mParent( parent ), mTarget( target ), mStartTime( startTime ), mDuration( duration ), mInvDuration( duration == 0 ? 0 : (1 / duration) ), mHasStarted( false ),
+		mComplete( false ), mAutoRemove( true ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
 {
 }
 
@@ -26,25 +32,24 @@ void TimelineItem::stepTo( float newTime )
 		return;
 	
 	float absTime = newTime - mStartTime;
-	float invDuration = ( mDuration <= 0 ) ? 1 : ( 1 / mDuration );
 	
 	if( newTime >= mStartTime ) {
 		float relTime;
 		if( mLoop ) {
-			relTime = math<float>::fmod( absTime * invDuration, 1 );
+			relTime = math<float>::fmod( absTime * mInvDuration, 1 );
 		}
 		else
-			relTime = math<float>::min( absTime * invDuration, 1 );
+			relTime = math<float>::min( absTime * mInvDuration, 1 );
 		
 		if( ! mHasStarted ) {
 			mHasStarted = true;
 			start();
 		}
 		
-		float time = ( wantsAbsoluteTime() ) ? absTime : relTime;
+		float time = ( mUseAbsoluteTime ) ? absTime : relTime;
 		
 		if( mLoop ) {
-			int32_t loopIteration = static_cast<int32_t>( ( newTime - mStartTime ) * invDuration );
+			int32_t loopIteration = static_cast<int32_t>( ( newTime - mStartTime ) * mInvDuration );
 			if( loopIteration != mLastLoopIteration ) {
 				mLastLoopIteration = loopIteration;
 				loopStart();
@@ -72,6 +77,7 @@ void TimelineItem::setStartTime( float time )
 void TimelineItem::setDuration( float duration )
 {
 	mDuration = duration;
+	mInvDuration = duration == 0 ? 1 : ( 1 / duration );
 	if( mParent )
 		mParent->timeChanged( this );
 }
@@ -79,11 +85,9 @@ void TimelineItem::setDuration( float duration )
 float TimelineItem::loopTime( float absTime )
 {
 	float result = absTime;
-
-	float invDuration = ( mDuration <= 0 ) ? 1 : ( 1 / mDuration );
 	
 	if( mLoop ) {
-		result = math<float>::fmod( result * invDuration, 1 );
+		result = math<float>::fmod( result * mInvDuration, 1 );
 		result *= mDuration;
 	}
 

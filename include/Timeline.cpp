@@ -19,6 +19,7 @@ using namespace std;
 Timeline::Timeline()
 	: TimelineItem( 0, 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
 {
+	mUseAbsoluteTime = true;
 }
 
 void Timeline::step( float timestep )
@@ -34,7 +35,7 @@ void Timeline::stepTo( float absoluteTime )
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); )
 	{
 		(**iter).stepTo( mCurrentTime );
-		if( (**iter).isComplete() && (**iter).isAutoRemove() )
+		if( (**iter).isComplete() && (**iter).getAutoRemove() )
 			iter = mItems.erase( iter );
 		else
 			++iter;
@@ -103,10 +104,12 @@ void Timeline::insert( TimelineItemRef item )
 
 void Timeline::calculateDuration()
 {
-	mDuration = 0;
+	float duration = 0;
 	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
-		mDuration = std::max( (*iter)->getEndTime(), mDuration );
-	}	
+		duration = std::max( (*iter)->getEndTime(), duration );
+	}
+	
+	setDuration( duration );
 }
 
 TimelineItemRef Timeline::find( void *target )

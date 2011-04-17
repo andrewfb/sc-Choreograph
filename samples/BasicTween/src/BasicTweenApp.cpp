@@ -216,7 +216,7 @@ void benchmark()
 {
 	Timer tm;
 	Timeline tln;
-	const int totalFloats = 200;
+	const int totalFloats = 10000;
 	float tempFloat[totalFloats];
 	for( size_t f = 0; f < totalFloats; ++f ) {
 		tempFloat[f] = 0;
@@ -224,8 +224,8 @@ void benchmark()
 		twn->setUpdateFn( cb );
 	}
 	tm.start();
-		for( size_t t = 0; t < 1000000; ++t ) {
-			tln.step( 1 / (float)1000000 );
+		for( size_t t = 0; t < 60000; ++t ) {
+			tln.step( 1 / (float)60000 );
 		}
 	tm.stop();
 	console() << "Total time: " << tm.getSeconds() << std::endl;
