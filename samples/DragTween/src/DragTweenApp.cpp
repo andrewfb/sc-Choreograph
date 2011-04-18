@@ -29,7 +29,7 @@ class Circle {
 	
 	void dragRelease() {
 		// tween back home
-		mDragTween = gTimeline.apply( &mPos, mHomePos, 3.0f, EaseOutQuad() );
+		mDragTween = gTimeline.apply( &mPos, mHomePos, 1.0f, EaseOutBack() );
 	}
 	
 	Color				mColor;
@@ -57,9 +57,9 @@ void DragTweenApp::setup()
 	gTimeline.stepTo( getElapsedSeconds() );
 
 	// setup the initial animation
-	const size_t numCircles = 25;
+	const size_t numCircles = 35;
 	for( size_t c = 0; c < numCircles; ++c ) {
-		float angle = c / (float)numCircles * 2 * M_PI;
+		float angle = c / (float)numCircles * 4 * M_PI;
 		Vec2f pos = getWindowCenter() + ( 50 + c / (float)numCircles * 200 ) * Vec2f( cos( angle ), sin( angle ) );
 		mCircles.push_back( Circle( Color( CM_HSV, c / (float)numCircles, 1, 1 ), 0, getWindowCenter(), pos ) );
 		gTimeline.append( &mCircles.back().mPos, pos, 0.5f, EaseOutAtan( 10 ) )->delay( -0.45f );
@@ -79,7 +79,7 @@ void DragTweenApp::mouseDown( MouseEvent event )
 
 	// if we hit one, tell it to startDrag()
 	if( circleIt != mCircles.end() ) {
-		mCurrentDragCircle = &*circleIt;
+		mCurrentDragCircle = &(*circleIt);
 		mCurrentDragCircle->startDrag();
 	}
 }
