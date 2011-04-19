@@ -28,7 +28,6 @@
 
 using namespace cinder;
 using namespace std;
-using namespace cinder::tween;
 
 typedef std::vector<TimelineItemRef>::iterator s_iter;
 

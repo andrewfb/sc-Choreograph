@@ -24,11 +24,11 @@
 
 #include "Tween.h"
 
-namespace cinder { namespace tween {
+namespace cinder {
 
 TweenBase::TweenBase( void *target, bool copyStartValue, float startTime, float duration, EaseFn easeFunction )
 	: TimelineItem( 0, target, startTime, duration ), mCopyStartValue( copyStartValue ), mEaseFunction( easeFunction )
 {
 }
 
-} } // namespace cinder::tween
+} // namespace cinder

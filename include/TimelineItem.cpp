@@ -27,7 +27,7 @@
 
 #include "cinder/CinderMath.h"
 
-namespace cinder { namespace tween { 
+namespace cinder {
 
 TimelineItem::TimelineItem( class Timeline *parent )
 	: mParent( parent ), mTarget( 0 ), mStartTime( 0 ), mDuration( 0 ), mInvDuration( 0 ), mHasStarted( false ),
@@ -115,4 +115,4 @@ float TimelineItem::loopTime( float absTime )
 	return result;
 }
 
-} } // namespace cinder::tween
+} // namespace cinder

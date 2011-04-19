@@ -27,23 +27,20 @@
 namespace cinder
 {
 
-	namespace tween
-	{
-		Cue::Cue( std::function<void ()> fn, float atTime ):
-			TimelineItem( 0, 0, atTime, 0 ), mFunction( fn )
-		{
-		}
-		
-		void Cue::loopStart()
-		{
-			if( mFunction )
-				mFunction();
-		}
-		
-		TimelineItemRef Cue::cloneReverse() const
-		{
-			return TimelineItemRef( new Cue( *this ) );
-		}
-	}
-
+Cue::Cue( std::function<void ()> fn, float atTime ):
+	TimelineItem( 0, 0, atTime, 0 ), mFunction( fn )
+{
 }
+
+void Cue::loopStart()
+{
+	if( mFunction )
+		mFunction();
+}
+
+TimelineItemRef Cue::cloneReverse() const
+{
+	return TimelineItemRef( new Cue( *this ) );
+}
+
+} // namespace cinder
