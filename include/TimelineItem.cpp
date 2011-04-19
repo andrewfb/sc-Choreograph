@@ -41,7 +41,7 @@ TimelineItem::TimelineItem( Timeline *parent, void *target, float startTime, flo
 {
 }
 
-void TimelineItem::remove()
+void TimelineItem::removeSelf()
 {
 	if( mParent )
 		mParent->remove( shared_from_this() );
