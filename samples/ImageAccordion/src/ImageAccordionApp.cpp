@@ -51,7 +51,7 @@ void ImageAccordionApp::prepareSettings(Settings *settings) {
 void ImageAccordionApp::setup() {
 	
 	mStep = 1.0 / 60.0;
-	mAnimEase = EaseOutAtan();
+	mAnimEase = EaseOutAtan(25);
 	mAnimDuration = 0.7f;
 	
 	mTotalItems = 8;
