@@ -6,7 +6,6 @@
 using namespace std;
 using namespace ci;
 using namespace ci::app;
-using namespace ci::tween;
 
 // Simple class to demonstrate custom lerping
 struct Box {
@@ -74,11 +73,6 @@ void printFloat( float *v )
 std::cout << "v: " << *v;
 }
 
-void startFloat( float *v )
-{
-std::cout << "Start: " << *v << std::endl;
-}
-
 void BasicTweenApp::setup()
 {	
 	mX = getWindowWidth()/2;
@@ -102,8 +96,7 @@ void BasicTweenApp::setup()
 	mSubtimeline = Timeline::create();
 	mSubtimeline->setDefaultAutoRemove( false );
 	mSubtimeline->append<float>( &mSubBoxes[0].mPos.y, 50.0f, 1 );
-TweenRef<float> temp = mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 1 )->startFn( startFloat )->delay( 0.5f );
-temp->setUpdateFn( printFloat );
+TweenRef<float> temp = mSubtimeline->append<float>( &mSubBoxes[1].mPos.y, 50.0f, 1 )->delay( 0.5f );
 	mSubtimeline->append<float>( &mSubBoxes[2].mPos.y, 50.0f, 1 );
 	mSubtimeline->appendPingPong();
 	mSubtimeline->setLoop();
@@ -171,19 +164,19 @@ Box randomBox()
 		Vec2f( Rand::randFloat( 40 ), Rand::randFloat( 40 ) ) );
 }
 
-void boxStart( Box *box )
+void boxStart()
 {
 	console() << std::endl << "Box is starting." << std::endl;
 }
 
-void printBox( Box *box )
+void boxPrint( Box *box )
 {
-	console() << box->mPos.x;
+	console() << "Box is at" << box->mPos << std::endl;
 }
 
-void boxDone( Box *box )
+void boxDone()
 {
-	console() << std::endl << "Box is done." << std::endl;
+	console() << "Box is done." << std::endl;
 }
 
 void BasicTweenApp::tweenToMouse()
@@ -200,7 +193,7 @@ console() << "entering: " << mSequence.getNumItems() << "tweens" << std::endl;
 	// make a new random box and tween to that
 	TweenRef<Box> boxTween = mSequence.append( &mBox, randomBox(), 3.0, EaseOutAtan( 45 ), boxLerp )->delay( -1.0f );
 	boxTween->setStartFn( boxStart );
-	boxTween->setUpdateFn( printBox );
+	boxTween->setUpdateFn( std::bind( boxPrint, &mBox ) );
 	boxTween->setCompletionFn( boxDone );
 //	boxTween->setAutoRemove();
 //	boxTween->setPingPong();
@@ -221,7 +214,6 @@ void benchmark()
 	for( size_t f = 0; f < totalFloats; ++f ) {
 		tempFloat[f] = 0;
 		TweenRef<float> twn = tln.add( &tempFloat[f], 10.0f, 1 );
-		twn->setUpdateFn( cb );
 	}
 	tm.start();
 		for( size_t t = 0; t < 60000; ++t ) {
