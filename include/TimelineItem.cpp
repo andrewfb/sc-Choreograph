@@ -64,6 +64,7 @@ void TimelineItem::stepTo( float newTime )
 		
 		if( ! mHasStarted ) {
 			mHasStarted = true;
+			loopStart();
 			start();
 		}
 		
