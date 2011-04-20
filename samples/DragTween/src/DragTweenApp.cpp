@@ -6,7 +6,6 @@
 
 using namespace ci;
 using namespace ci::app;
-using namespace ci::tween;
 using namespace std;
 
 Timeline gTimeline;
@@ -24,12 +23,12 @@ class Circle {
 
 	void startDrag() {
 		if( mDragTween ) // if we're heading somewhere, stop going there and start listening to the drag
-			mDragTween->remove();
+			mDragTween->removeSelf();
 	}
 	
 	void dragRelease() {
 		// tween back home
-		mDragTween = gTimeline.apply( &mPos, mHomePos, 1.0f, EaseOutBack() );
+		mDragTween = gTimeline.apply( &mPos, mHomePos, 1.0f, EaseOutBack( 3 ) );
 	}
 	
 	Color				mColor;
