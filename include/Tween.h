@@ -47,14 +47,44 @@ T tweenLerp( const T &start, const T &end, float time )
 //Our templated tween design
 class TweenBase : public TimelineItem {
   public:
+	typedef std::function<void ()>		StartFn;
+	typedef std::function<void ()>		CompletionFn;
+	typedef std::function<void ()>		UpdateFn;
+
 	TweenBase( void *target, bool copyStartValue, float startTime, float duration, EaseFn easeFunction = easeNone );
 	virtual ~TweenBase() {}
 
 	//! change how the tween moves through time
 	void	setEaseFn( EaseFn easeFunction ) { mEaseFunction = easeFunction; }
 	EaseFn	getEaseFn() const { return mEaseFunction; }
+
+	void			setStartFn( StartFn startFunction ) { mStartFunction = startFunction; }
+	StartFn			getStartFn() const { return mStartFunction; }
+	
+	void			setUpdateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; }									
+	UpdateFn		getUpdateFn() const { return mUpdateFunction; }
+																																					
+	void			setCompletionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFunction; }
+	CompletionFn	getCompletionFn() const { return mCompletionFunction; }
+	
 	
   protected:
+	virtual void reset( bool unsetStarted )
+	{
+		TimelineItem::reset( unsetStarted );
+	}
+
+	virtual void complete()
+	{
+		if( mCompletionFunction )
+			mCompletionFunction();
+	}
+
+  
+	StartFn				mStartFunction;
+	UpdateFn			mUpdateFunction;	
+	CompletionFn		mCompletionFunction;
+  
 	EaseFn		mEaseFunction;
 	float		mDuration;
 	bool		mCopyStartValue;
@@ -78,9 +108,6 @@ template<typename T>
 class Tween : public TweenBase {
   public:
 	typedef std::function<T (const T&, const T&, float)>	LerpFn;
-	typedef std::function<void (T*)>						StartFn;
-	typedef std::function<void (T*)>						CompletionFn;
-	typedef std::function<void (T*)>						UpdateFn;
 
 	// build a tween with a target, target value, duration, and optional ease function
 	Tween( T *target, T endValue, float startTime, float duration,
@@ -97,22 +124,14 @@ class Tween : public TweenBase {
 	
 	virtual ~Tween() {}
 	
-	void			setStartFn( StartFn startFunction ) { mStartFunction = startFunction; }
-	StartFn			getStartFn() const { return mStartFunction; }
-	TweenRef<T>		startFn( StartFn startFunction ) { mStartFunction = startFunction; return getThisRef(); }
-	
-	void			setUpdateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; }									
-	UpdateFn		getUpdateFn() const { return mUpdateFunction; }
-	TweenRef<T>		updateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; return getThisRef(); }
-																																					
-	void			setCompletionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFunction; }
-	CompletionFn	getCompletionFn() const { return mCompletionFunction; }
-	TweenRef<T>		completionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFn; return getThisRef(); }
-	
 	//! Returns the starting value for the tween. If the tween will copy its target's value upon starting (isCopyStartValue()) and the tween has not started, this returns the value of its target when the tween was created
 	T	getStartValue() const { return mStartValue; }
 	T	getEndValue() const { return mEndValue; }			
 	T*	getTarget() const { return reinterpret_cast<T*>( mTarget ); }
+
+	TweenRef<T>		startFn( StartFn startFunction ) { mStartFunction = startFunction; return getThisRef(); }
+	TweenRef<T>		updateFn( UpdateFn updateFunction ) { mUpdateFunction = updateFunction; return getThisRef(); }
+	TweenRef<T>		completionFn( CompletionFn completionFunction ) { mCompletionFunction = completionFn; return getThisRef(); }	
 	
 	//! Returns whether the tween will copy its target's value upon starting
 	bool	isCopyStartValue() { return mCopyStartValue; }
@@ -146,38 +165,25 @@ class Tween : public TweenBase {
 		return result;
 	}
 	
-	virtual void reset( bool unsetStarted )
-	{
-		TimelineItem::reset( unsetStarted );
-	}
-	
 	virtual void start()
 	{
 		if( mCopyStartValue )
 			mStartValue = *(reinterpret_cast<T*>( mTarget ) );
 		if( mStartFunction )
-			mStartFunction( reinterpret_cast<T*>(mTarget) );
+			mStartFunction();
 	}
 	
 	virtual void update( float relativeTime )
 	{
 		*reinterpret_cast<T*>(mTarget) = mLerpFunction( mStartValue, mEndValue, mEaseFunction( relativeTime ) );
 		if( mUpdateFunction )
-			mUpdateFunction( reinterpret_cast<T*>(mTarget) );
+			mUpdateFunction();
 	}
 	
-	virtual void complete()
-	{
-		if( mCompletionFunction )
-			mCompletionFunction( reinterpret_cast<T*>(mTarget) );
-	}
 
 	T	mStartValue, mEndValue;	
 	
-	StartFn				mStartFunction;
 	LerpFn				mLerpFunction;
-	CompletionFn		mCompletionFunction;
-	UpdateFn			mUpdateFunction;
 };
 
 typedef std::shared_ptr<TweenBase>	TweenBaseRef;
