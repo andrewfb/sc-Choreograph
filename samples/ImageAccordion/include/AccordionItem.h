@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "Choreograph.h"
 #include "cinder/Color.h"
 #include "cinder/Rect.h"
 #include "cinder/Area.h"
@@ -15,9 +16,10 @@ class AccordionItem {
 public:
 	
 	AccordionItem();
-	AccordionItem( float x, float y, float height, float contractedWidth, float expandedHeight, Texture image );
+	AccordionItem( Timeline &timeline, float x, float y, float height, float contractedWidth, float expandedHeight, Texture image );
 	void update();
 	void draw();
+	void animTo ( float newX, float newWidth );
 	bool isPointIn( const Vec2f &pt );
 	float round( float n );
 	
@@ -28,6 +30,11 @@ public:
 	
 	Texture mImage;
 	Area    mImageArea;
+	
+	Timeline *mTimeline;
+	
+	float			mAnimDuration;
+	EaseFn			mAnimEase;
 	
 };
 

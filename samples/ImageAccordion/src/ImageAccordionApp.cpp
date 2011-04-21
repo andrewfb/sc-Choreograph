@@ -29,7 +29,6 @@ class ImageAccordionApp : public AppBasic {
 	void prepareSettings(Settings *settings);
 	void setup();
 	void mouseMove( MouseEvent event );
-	//void mouseDown( MouseEvent event );	
 	void update();
 	void draw();
 	
@@ -39,8 +38,6 @@ class ImageAccordionApp : public AppBasic {
 	
 	int				mTotalItems;
 	
-	float			mAnimDuration;
-	EaseFn			mAnimEase;
 	float			mItemExpandedWidth;
 	float			mItemRelaxedWidth;
 	float			mItemHeight;
@@ -67,8 +64,6 @@ void ImageAccordionApp::prepareSettings(Settings *settings) {
 void ImageAccordionApp::setup() {
 	
 	mStep = 1.0 / 60.0;
-	mAnimEase = EaseOutAtan(25);
-	mAnimDuration = 0.7f;
 	
 	mTotalItems = 8;
 	mItemExpandedWidth = 500;
@@ -89,7 +84,7 @@ void ImageAccordionApp::setup() {
 	float xPos = 0;
 	
 	for( int m = 0; m < mTotalItems; ++m ) {
-		mItems.push_back( AccordionItem(xPos, 0, mItemHeight, mItemRelaxedWidth, mItemExpandedWidth, mImages[m]) );
+		mItems.push_back( AccordionItem( mTimeline, xPos, 0, mItemHeight, mItemRelaxedWidth, mItemExpandedWidth, mImages[m] ) );
 		xPos += mItemRelaxedWidth;
 	}
 	
@@ -125,19 +120,16 @@ void ImageAccordionApp::mouseMove( MouseEvent event ) {
 		
 		if (mCurrentSelection == mItems.end()) {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
-				mTimeline.apply( &itemIt->mX, xPos, mAnimDuration, mAnimEase );
-				mTimeline.apply( &itemIt->mWidth, mItemRelaxedWidth, mAnimDuration, mAnimEase );
+				itemIt->animTo(xPos, mItemRelaxedWidth);
 				xPos += mItemRelaxedWidth;
 			}
 		} else {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 				if( itemIt == mCurrentSelection ) {
-					mTimeline.apply( &itemIt->mX, xPos, mAnimDuration, mAnimEase );
-					mTimeline.apply( &itemIt->mWidth, mItemExpandedWidth, mAnimDuration, mAnimEase );
+					itemIt->animTo(xPos, mItemExpandedWidth);
 					xPos += mItemExpandedWidth;
 				} else {
-					mTimeline.apply( &itemIt->mX, xPos, mAnimDuration, mAnimEase );
-					mTimeline.apply( &itemIt->mWidth, contractedWidth, mAnimDuration, mAnimEase );
+					itemIt->animTo(xPos, contractedWidth);
 					xPos += contractedWidth;
 				}
 			}
