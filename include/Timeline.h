@@ -24,12 +24,13 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
+#include "cinder/Easing.h"
 #include "Tween.h"
 #include "Cue.h"
-#include "cinder/Cinder.h"
+
 #include <vector>
-#include "cinder/Color.h"
-#include "cinder/Vector.h"
+#include <list>
 
 namespace cinder {
 
@@ -40,13 +41,15 @@ class Timeline : public TimelineItem {
   public:
 	Timeline();			
 
-	static TimelineRef	create() { return std::shared_ptr<Timeline>( new Timeline() ); }
+	//! Creates a new timeline, defaulted to infinite
+	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
 
-	//! advance time a specified amount
+	//! Advances time a specified amount and evaluate items
 	void	step( float timestep );
-	//! go to a specific time
+	//! Goes to a specific time and evaluate items
 	void	stepTo( float absoluteTime );
 	
+	//! Returns the timeline's most recent current time
 	float	getCurrentTime() const { return mCurrentTime; }
 	
 	//! add a cue to the Timeline add the start-time \a atTime
@@ -97,7 +100,7 @@ class Timeline : public TimelineItem {
 		return newTween;
 	}
 
-	//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration or the current time, whichever is greater
+	//! Creates a new tween and adds it to the end of a timeline, setting its start time to the timeline's duration or the current time, whichever is greater
 	template<typename T>
 	TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
 		TweenRef<T> newTween( new Tween<T>( target, endValue, std::max( getDuration(), mCurrentTime ), duration, easeFunction, lerpFunction ) );
@@ -106,7 +109,7 @@ class Timeline : public TimelineItem {
 		return newTween;
 	}
 	
-	//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration or the current time, whichever is greater
+	//! Creates a new tween and adds it to the end of a timeline, setting its start time to the timeline's duration or the current time, whichever is greater
 	template<typename T>
 	TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
 		TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, std::max( getDuration(), mCurrentTime ), duration, easeFunction, lerpFunction ) );
@@ -115,31 +118,57 @@ class Timeline : public TimelineItem {
 		return newTween;
 	}
 
+	//! Creates a new tween and adds it to the end of the last tween whose target matches \a target. The new tween's start time is set to the previous tween's end time or the current time if no existing tween matches the target, whichever is greater
+	template<typename T>
+	TweenRef<T> appendTarget( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
+		float startTime = mCurrentTime;
+		TimelineItemRef last = findLast( target );
+		if( last )
+			startTime = last->getEndTime();
+		TweenRef<T> newTween( new Tween<T>( target, endValue, std::max( mCurrentTime, startTime ), duration, easeFunction, lerpFunction ) );
+		newTween->setAutoRemove( mDefaultAutoRemove );
+		insert( newTween );
+		return newTween;
+	}
+	
+	//! Creates a new tween and adds it to the end of the last tween whose target matches \a target. The new tween's start time is set to the previous tween's end time or the current time, whichever is greater
+	template<typename T>
+	TweenRef<T> appendTarget( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
+		float startTime = mCurrentTime;
+		TimelineItemRef last = findLast( target );
+		if( last )
+			startTime = last->getEndTime();
+		TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, std::max( mCurrentTime, startTime ), duration, easeFunction, lerpFunction ) );
+		newTween->setAutoRemove( mDefaultAutoRemove );
+		insert( newTween );
+		return newTween;
+	}
+
 	//! Appends to the end of the timeline mirror images of all items
 	void appendPingPong();
 
-	//! Replaces any existing TimelineItems that match \a item's target and adds \a item to the timeline
+	//! Replaces any existing TimelineItems that match \a item's target and adds \a item to the timeline. Safe to use from callback fn's.
 	void apply( TimelineItemRef item );
 	
-	//! add an item to the timeline at the current time
+	//! add an item to the timeline at the current time. Safe to use from callback fn's.
 	void add( TimelineItemRef item );
-	//! adds an item to the timeline. Its start time is not modified
+	//! adds an item to the timeline. Its start time is not modified. Safe to use from callback fn's.
 	void insert( TimelineItemRef item );
-	//! adds an item to the timeline, setting its startTime to be at \a atTime
+	//! adds an item to the timeline, setting its startTime to be at \a atTime. Safe to use from callback fn's.
 	void insert( TimelineItemRef item, float atTime ) { item->mStartTime = atTime; insert( item ); }
 
 	//! Returns the number of items in the Timeline
 	size_t				getNumItems() const { return mItems.size(); }
 	//! Returns the first item in the timeline the target of which matches \a target
 	TimelineItemRef		find( void *target );
-	//! Removes the TimelineItem \a item from the Timeline
+	//! Returns the latest-starting item in the timeline the target of which matches \a target
+	TimelineItemRef		findLast( void *target );
+	//! Removes the TimelineItem \a item from the Timeline. Safe to use from callback fn's.
 	void				remove( TimelineItemRef item );
 	
-	//! Remove all tweens from the Timeline
+	//! Remove all tweens from the Timeline. Do not call from callback fn's.
 	void clear();
-	//! Remove completed items from the Timeline
-	void clearCompleted();
-	//! Sets the time to zero, all tweens as not completed, and if \a unsetStarted, marks the tweens as not started
+	//! Sets the time to zero, all tweens as not completed, and if \a unsetStarted, marks the tweens as not started. Do not call from callback fn's.
 	void reset( bool unsetStarted = false );
 
 	//! Sets the default \a autoRemove value for all future TimelineItems added to the Timeline
@@ -148,7 +177,7 @@ class Timeline : public TimelineItem {
 	bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
 
 	//! Call this to notify the Timeline if the \a item's start-time or duration has changed
-	void	timeChanged( TimelineItem *item );
+	void	itemTimeChanged( TimelineItem *item );
 
   protected:
 	virtual void reverse();
@@ -158,12 +187,11 @@ class Timeline : public TimelineItem {
 	virtual void update( float absTime );
 	virtual void complete() {}
 
-	void							calculateDuration();
+	void						calculateDuration();
 
-	bool							mDefaultAutoRemove;
-	float							mCurrentTime;
-	std::vector<TimelineItemRef>	mItems;
+	bool						mDefaultAutoRemove;
+	float						mCurrentTime;
+	std::list<TimelineItemRef>	mItems;
 };
 
-
-}
+} // namespace cinder

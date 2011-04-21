@@ -191,7 +191,9 @@ console() << "entering: " << mSequence.getNumItems() << "tweens" << std::endl;
 	mSequence.apply( &mY, mousePos.y, 1.5f, EaseInOutQuad() );
 	
 	// make a new random box and tween to that
-	TweenRef<Box> boxTween = mSequence.append( &mBox, randomBox(), 3.0, EaseOutAtan( 45 ), boxLerp )->delay( -1.0f );
+	Box newBox = randomBox();
+	newBox.mPos = mousePos;
+	TweenRef<Box> boxTween = mSequence.appendTarget( &mBox, newBox, 3.0, EaseNone(), boxLerp );
 	boxTween->setStartFn( boxStart );
 	boxTween->setUpdateFn( std::bind( boxPrint, &mBox ) );
 	boxTween->setCompletionFn( boxDone );
