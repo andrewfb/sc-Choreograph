@@ -29,7 +29,7 @@
 using namespace cinder;
 using namespace std;
 
-typedef std::vector<TimelineItemRef>::iterator s_iter;
+typedef std::list<TimelineItemRef>::iterator s_iter;
 
 Timeline::Timeline()
 	: TimelineItem( 0, 0, 0, 0 ), mDefaultAutoRemove( true ), mCurrentTime( 0 )
@@ -46,33 +46,34 @@ void Timeline::step( float timestep )
 void Timeline::stepTo( float absoluteTime )
 {	
 	mCurrentTime = absoluteTime;
-	
-	for( s_iter iter = mItems.begin(); iter != mItems.end(); )
-	{
-		(**iter).stepTo( mCurrentTime );
-		if( (**iter).isComplete() && (**iter).getAutoRemove() )
+
+	// remove all items which have been marked for removal	
+	bool needRecalc = false;
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ) {
+		if( (*iter)->mMarkedForRemoval ) {
 			iter = mItems.erase( iter );
+			needRecalc = true;
+		}
 		else
 			++iter;
+	}
+	if( needRecalc )
+		calculateDuration();	
+	
+	// we need to cache the end(). If a tween's update() fn or similar were to manipulate
+	// the list of items by adding new ones, we'll have invalidated our iterator.
+	// Deleted items are never removed immediately, but are marked for deletion.
+	s_iter endItem = mItems.end();
+	for( s_iter iter = mItems.begin(); iter != endItem; ++iter ) {
+		(*iter)->stepTo( mCurrentTime );
+		if( (*iter)->isComplete() && (*iter)->getAutoRemove() )
+			(*iter)->mMarkedForRemoval = true;
 	}
 }
 
 void Timeline::clear()
 {
 	mItems.clear();	
-}
-
-void Timeline::clearCompleted()
-{
-	s_iter iter = mItems.begin();	
-	while (iter != mItems.end()) {		
-		if( (**iter).isComplete() )
-			iter = mItems.erase(iter);
-		else
-			++iter;
-	}
-	
-	calculateDuration();
 }
 
 void Timeline::appendPingPong()
@@ -154,12 +155,11 @@ TimelineItemRef Timeline::findLast( void *target )
 	return (result == mItems.end() ) ? TimelineItemRef() : *result;
 }
 
-void Timeline::remove( TimelineItemRef action )
+void Timeline::remove( TimelineItemRef item )
 {
-	s_iter iter = std::find( mItems.begin(), mItems.end(), action );
+	s_iter iter = std::find( mItems.begin(), mItems.end(), item );
 	if( iter != mItems.end() )
-		mItems.erase( iter );
-	calculateDuration();
+		(*iter)->mMarkedForRemoval = true;
 }
 
 void Timeline::reset( bool unsetStarted )
@@ -198,7 +198,7 @@ void Timeline::update( float absTime )
 	stepTo( absTime );
 }
 
-void Timeline::timeChanged( TimelineItem *item )
+void Timeline::itemTimeChanged( TimelineItem *item )
 {
 	calculateDuration();
 }

@@ -113,7 +113,7 @@ namespace cinder
 		
 		void	*mTarget;
 		float	mStartTime;
-		bool	mHasStarted, mComplete;
+		bool	mHasStarted, mComplete, mMarkedForRemoval;
 		bool	mInfinite;
 		bool	mLoop;
 		bool	mUseAbsoluteTime;

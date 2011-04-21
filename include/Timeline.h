@@ -24,12 +24,13 @@
 
 #pragma once
 
+#include "cinder/Cinder.h"
+#include "cinder/Easing.h"
 #include "Tween.h"
 #include "Cue.h"
-#include "cinder/Cinder.h"
+
 #include <vector>
-#include "cinder/Color.h"
-#include "cinder/Vector.h"
+#include <list>
 
 namespace cinder {
 
@@ -43,11 +44,12 @@ class Timeline : public TimelineItem {
 	//! Creates a new timeline, defaulted to infinite
 	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
 
-	//! advance time a specified amount
+	//! Advances time a specified amount and evaluate items
 	void	step( float timestep );
-	//! go to a specific time
+	//! Goes to a specific time and evaluate items
 	void	stepTo( float absoluteTime );
 	
+	//! Returns the timeline's most recent current time
 	float	getCurrentTime() const { return mCurrentTime; }
 	
 	//! add a cue to the Timeline add the start-time \a atTime
@@ -145,14 +147,14 @@ class Timeline : public TimelineItem {
 	//! Appends to the end of the timeline mirror images of all items
 	void appendPingPong();
 
-	//! Replaces any existing TimelineItems that match \a item's target and adds \a item to the timeline
+	//! Replaces any existing TimelineItems that match \a item's target and adds \a item to the timeline. Safe to use from callback fn's.
 	void apply( TimelineItemRef item );
 	
-	//! add an item to the timeline at the current time
+	//! add an item to the timeline at the current time. Safe to use from callback fn's.
 	void add( TimelineItemRef item );
-	//! adds an item to the timeline. Its start time is not modified
+	//! adds an item to the timeline. Its start time is not modified. Safe to use from callback fn's.
 	void insert( TimelineItemRef item );
-	//! adds an item to the timeline, setting its startTime to be at \a atTime
+	//! adds an item to the timeline, setting its startTime to be at \a atTime. Safe to use from callback fn's.
 	void insert( TimelineItemRef item, float atTime ) { item->mStartTime = atTime; insert( item ); }
 
 	//! Returns the number of items in the Timeline
@@ -161,14 +163,12 @@ class Timeline : public TimelineItem {
 	TimelineItemRef		find( void *target );
 	//! Returns the latest-starting item in the timeline the target of which matches \a target
 	TimelineItemRef		findLast( void *target );
-	//! Removes the TimelineItem \a item from the Timeline
+	//! Removes the TimelineItem \a item from the Timeline. Safe to use from callback fn's.
 	void				remove( TimelineItemRef item );
 	
-	//! Remove all tweens from the Timeline
+	//! Remove all tweens from the Timeline. Do not call from callback fn's.
 	void clear();
-	//! Remove completed items from the Timeline
-	void clearCompleted();
-	//! Sets the time to zero, all tweens as not completed, and if \a unsetStarted, marks the tweens as not started
+	//! Sets the time to zero, all tweens as not completed, and if \a unsetStarted, marks the tweens as not started. Do not call from callback fn's.
 	void reset( bool unsetStarted = false );
 
 	//! Sets the default \a autoRemove value for all future TimelineItems added to the Timeline
@@ -177,7 +177,7 @@ class Timeline : public TimelineItem {
 	bool	getDefaultAutoRemove() const { return mDefaultAutoRemove; }
 
 	//! Call this to notify the Timeline if the \a item's start-time or duration has changed
-	void	timeChanged( TimelineItem *item );
+	void	itemTimeChanged( TimelineItem *item );
 
   protected:
 	virtual void reverse();
@@ -187,12 +187,11 @@ class Timeline : public TimelineItem {
 	virtual void update( float absTime );
 	virtual void complete() {}
 
-	void							calculateDuration();
+	void						calculateDuration();
 
-	bool							mDefaultAutoRemove;
-	float							mCurrentTime;
-	std::vector<TimelineItemRef>	mItems;
+	bool						mDefaultAutoRemove;
+	float						mCurrentTime;
+	std::list<TimelineItemRef>	mItems;
 };
 
-
-}
+} // namespace cinder
