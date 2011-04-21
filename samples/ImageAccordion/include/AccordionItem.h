@@ -7,6 +7,7 @@
 #include "cinder/Area.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/Text.h"
 #include <vector>
 
 using namespace ci;
@@ -16,26 +17,32 @@ class AccordionItem {
 public:
 	
 	AccordionItem();
-	AccordionItem( Timeline &timeline, float x, float y, float height, float contractedWidth, float expandedHeight, Texture image );
+	AccordionItem( Timeline *timeline, float x, float y, float height, float contractedWidth, float expandedHeight, Texture image );
 	void update();
 	void draw();
-	void animTo ( float newX, float newWidth );
+	
 	bool isPointIn( const Vec2f &pt );
+	void animExpand ( float newX, float newWidth );
+	void animContract ( float newX, float newWidth );
+	void animRelax ( float newX, float newWidth );
+	void animTo ( float newX, float newWidth );
 	float round( float n );
 	
-	float mX, mY, mWidth, mHeight, mExpandedWidth;
+	float mX, mY, mWidth, mHeight, mExpandedWidth, mTextAlpha;
 	
-	Rectf mRect;
-	Color mColor;
+	Rectf mImageRect;
+	Rectf mTextRect;
 	
 	Texture mImage;
+	Texture mText;
+	
 	Area    mImageArea;
+	Area    mTextArea;
 	
 	Timeline *mTimeline;
 	
 	float			mAnimDuration;
 	EaseFn			mAnimEase;
-	
 };
 
 

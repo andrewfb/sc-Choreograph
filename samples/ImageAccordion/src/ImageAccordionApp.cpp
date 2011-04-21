@@ -1,21 +1,21 @@
 
 /*
  *
- * All photos copyright Trey Ratcliff: http://www.stuckincustoms.com/
+ * All photos copyright Trey Ratcliff
+ * under Creative Commons Non-Commercial license
  *
+ * http://www.stuckincustoms.com/
+ * http://creativecommons.org/licenses/by-nc/2.5/
+ * 
  */
-
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIO.h"
 #include "Resources.h"
 #include "cinder/Rand.h"
-
 #include "Choreograph.h"
-
 #include "AccordionItem.h"
-
 #include <list>
 #include <vector>
 
@@ -25,16 +25,14 @@ using namespace std;
 
 class ImageAccordionApp : public AppBasic {
   public:
-	
 	void prepareSettings(Settings *settings);
 	void setup();
 	void mouseMove( MouseEvent event );
 	void update();
 	void draw();
 	
-	
-	float mStep;
-	
+	float			mStep;
+	Timeline		mTimeline;
 	
 	int				mTotalItems;
 	
@@ -46,30 +44,26 @@ class ImageAccordionApp : public AppBasic {
 	
 	list<AccordionItem>				mItems;
 	list<AccordionItem>::iterator	mCurrentSelection;
-	
-	Timeline						mTimeline;
-	
-	
 };
 
 
-
-void ImageAccordionApp::prepareSettings(Settings *settings) {
+void ImageAccordionApp::prepareSettings(Settings *settings)
+{
 	settings->setWindowSize(848,564);
 	settings->setFrameRate(60);
+	settings->setResizable(false);
 	settings->setTitle("ImageAccordion");
 }
 
 
-void ImageAccordionApp::setup() {
-	
+void ImageAccordionApp::setup()
+{
 	mStep = 1.0 / 60.0;
 	
 	mTotalItems = 8;
 	mItemExpandedWidth = 500;
 	mItemRelaxedWidth = 848/mTotalItems;
 	mItemHeight = 564;
-	
 	
 	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_1 ) ) ) );
 	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_2 ) ) ) );
@@ -80,24 +74,20 @@ void ImageAccordionApp::setup() {
 	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_7 ) ) ) );
 	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_8 ) ) ) );
 	
-	
 	float xPos = 0;
 	
 	for( int m = 0; m < mTotalItems; ++m ) {
-		mItems.push_back( AccordionItem( mTimeline, xPos, 0, mItemHeight, mItemRelaxedWidth, mItemExpandedWidth, mImages[m] ) );
+		mItems.push_back( AccordionItem( &mTimeline, xPos, 0, mItemHeight, mItemRelaxedWidth, mItemExpandedWidth, mImages[m] ) );
 		xPos += mItemRelaxedWidth;
 	}
 	
 	// similar to mCurrentSelection = null;
 	mCurrentSelection = mItems.end();
-	
 }
 
 
-
-void ImageAccordionApp::mouseMove( MouseEvent event ) {
-	
-	
+void ImageAccordionApp::mouseMove( MouseEvent event )
+{
 	list<AccordionItem>::iterator mNewSelection = mItems.end();
 	
 	for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
@@ -107,63 +97,56 @@ void ImageAccordionApp::mouseMove( MouseEvent event ) {
 		}
 	}
 	
-	
-	
 	if (mNewSelection == mCurrentSelection) {
-		//cout << "do nothing" << endl;
+		// do nothing
 	} else {
-		//cout << "do something" << endl;
-		
+		// do something
 		float xPos = 0;
 		float contractedWidth = (mTotalItems*mItemRelaxedWidth - mItemExpandedWidth)/float(mTotalItems - 1);
 		mCurrentSelection = mNewSelection;
 		
 		if (mCurrentSelection == mItems.end()) {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
-				itemIt->animTo(xPos, mItemRelaxedWidth);
+				itemIt->animRelax(xPos, mItemRelaxedWidth);
 				xPos += mItemRelaxedWidth;
 			}
 		} else {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 				if( itemIt == mCurrentSelection ) {
-					itemIt->animTo(xPos, mItemExpandedWidth);
+					itemIt->animExpand(xPos, mItemExpandedWidth);
 					xPos += mItemExpandedWidth;
 				} else {
-					itemIt->animTo(xPos, contractedWidth);
+					itemIt->animContract(xPos, contractedWidth);
 					xPos += contractedWidth;
 				}
 			}
 		}
-		
 	}
-	
 	
 }
 
 
-void ImageAccordionApp::update() {
-	
-	//mTimeline.step(mStep);
-	mTimeline.stepTo( getElapsedSeconds() );
+void ImageAccordionApp::update()
+{
+	//mTimeline.step(mStep); // framerate dependent
+	mTimeline.stepTo( getElapsedSeconds() ); // framerate independent
 	
 	for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 		itemIt->update();
 	}
-	
 }
 
 
-void ImageAccordionApp::draw() {
-	
+void ImageAccordionApp::draw()
+{	
 	gl::clear( Color( 1, 1, 1 ) );
+	gl::enableAlphaBlending();
 	
 	for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 		itemIt->draw();
 	}
-	
 }
 
 
 CINDER_APP_BASIC( ImageAccordionApp, RendererGl )
-
 
