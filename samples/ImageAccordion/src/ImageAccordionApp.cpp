@@ -1,15 +1,27 @@
+
+/*
+ *
+ * All photos copyright Trey Ratcliff: http://www.stuckincustoms.com/
+ *
+ */
+
+
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/ImageIO.h"
+#include "Resources.h"
+#include "cinder/Rand.h"
 
 #include "Choreograph.h"
 
 #include "AccordionItem.h"
+
 #include <list>
+#include <vector>
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-using namespace ci::tween;
 
 class ImageAccordionApp : public AppBasic {
   public:
@@ -28,22 +40,26 @@ class ImageAccordionApp : public AppBasic {
 	int				mTotalItems;
 	
 	float			mAnimDuration;
-	tween::EaseFn	mAnimEase;
-	float			mItemExpandedHeight;
-	float			mItemRelaxedHeight;
-	float			mItemWidth;
+	EaseFn			mAnimEase;
+	float			mItemExpandedWidth;
+	float			mItemRelaxedWidth;
+	float			mItemHeight;
+	
+	vector<gl::Texture>				mImages;
 	
 	list<AccordionItem>				mItems;
 	list<AccordionItem>::iterator	mCurrentSelection;
 	
 	Timeline						mTimeline;
 	
+	
 };
 
 
 
 void ImageAccordionApp::prepareSettings(Settings *settings) {
-	settings->setWindowSize(600,600);
+	settings->setWindowSize(848,564);
+	settings->setFrameRate(60);
 	settings->setTitle("ImageAccordion");
 }
 
@@ -55,18 +71,29 @@ void ImageAccordionApp::setup() {
 	mAnimDuration = 0.7f;
 	
 	mTotalItems = 8;
-	mItemExpandedHeight = 200;
-	mItemRelaxedHeight = 60;
-	mItemWidth = 300;
+	mItemExpandedWidth = 500;
+	mItemRelaxedWidth = 848/mTotalItems;
+	mItemHeight = 564;
 	
 	
-	float yPos = 60;
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_1 ) ) ) );
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_2 ) ) ) );
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_3 ) ) ) );
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_4 ) ) ) );
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_5 ) ) ) );
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_6 ) ) ) );
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_7 ) ) ) );
+	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_8 ) ) ) );
+	
+	
+	float xPos = 0;
 	
 	for( int m = 0; m < mTotalItems; ++m ) {
-		mItems.push_back( AccordionItem(150, yPos, mItemWidth, mItemRelaxedHeight) );
-		yPos += mItemRelaxedHeight;
+		mItems.push_back( AccordionItem(xPos, 0, mItemHeight, mItemRelaxedWidth, mItemExpandedWidth, mImages[m]) );
+		xPos += mItemRelaxedWidth;
 	}
 	
+	// similar to mCurrentSelection = null;
 	mCurrentSelection = mItems.end();
 	
 }
@@ -92,26 +119,26 @@ void ImageAccordionApp::mouseMove( MouseEvent event ) {
 	} else {
 		//cout << "do something" << endl;
 		
-		float yPos = 60;
-		float contractedHeight = (mTotalItems*mItemRelaxedHeight - mItemExpandedHeight)/float(mTotalItems - 1);
+		float xPos = 0;
+		float contractedWidth = (mTotalItems*mItemRelaxedWidth - mItemExpandedWidth)/float(mTotalItems - 1);
 		mCurrentSelection = mNewSelection;
 		
 		if (mCurrentSelection == mItems.end()) {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
-				mTimeline.apply( &itemIt->mY, yPos, mAnimDuration, mAnimEase );
-				mTimeline.apply( &itemIt->mHeight, mItemRelaxedHeight, mAnimDuration, mAnimEase );
-				yPos += mItemRelaxedHeight;
+				mTimeline.apply( &itemIt->mX, xPos, mAnimDuration, mAnimEase );
+				mTimeline.apply( &itemIt->mWidth, mItemRelaxedWidth, mAnimDuration, mAnimEase );
+				xPos += mItemRelaxedWidth;
 			}
 		} else {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 				if( itemIt == mCurrentSelection ) {
-					mTimeline.apply( &itemIt->mY, yPos, mAnimDuration, mAnimEase );
-					mTimeline.apply( &itemIt->mHeight, mItemExpandedHeight, mAnimDuration, mAnimEase );
-					yPos += mItemExpandedHeight;
+					mTimeline.apply( &itemIt->mX, xPos, mAnimDuration, mAnimEase );
+					mTimeline.apply( &itemIt->mWidth, mItemExpandedWidth, mAnimDuration, mAnimEase );
+					xPos += mItemExpandedWidth;
 				} else {
-					mTimeline.apply( &itemIt->mY, yPos, mAnimDuration, mAnimEase );
-					mTimeline.apply( &itemIt->mHeight, contractedHeight, mAnimDuration, mAnimEase );
-					yPos += contractedHeight;
+					mTimeline.apply( &itemIt->mX, xPos, mAnimDuration, mAnimEase );
+					mTimeline.apply( &itemIt->mWidth, contractedWidth, mAnimDuration, mAnimEase );
+					xPos += contractedWidth;
 				}
 			}
 		}
@@ -124,7 +151,8 @@ void ImageAccordionApp::mouseMove( MouseEvent event ) {
 
 void ImageAccordionApp::update() {
 	
-	mTimeline.step(mStep);
+	//mTimeline.step(mStep);
+	mTimeline.stepTo( getElapsedSeconds() );
 	
 	for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 		itemIt->update();
