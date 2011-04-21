@@ -65,6 +65,13 @@ namespace cinder
 		//! Sets whether the item starts over when it is complete. Returns a reference to \a this
 		TimelineItemRef loop( bool doLoop = true ) { setLoop( doLoop ); return shared_from_this(); }
 
+		//! Returns whether the item ever is marked as complete
+		bool			getInfinite() const { return mLoop; }
+		//! Sets whether the item ever is marked as complete
+		void			setInfinite( bool infinite = true ) { mInfinite = infinite; }
+		//! Sets whether the item ever is marked as complete. Returns a reference to \a this
+		TimelineItemRef infinite( bool inf = true ) { setInfinite( inf ); return shared_from_this(); }
+
 		//! Returns the time of the item's competion, equivalent to getStartTime() + getDuration().
 		float			getEndTime() const { return mStartTime + mDuration; }
 
@@ -107,6 +114,7 @@ namespace cinder
 		void	*mTarget;
 		float	mStartTime;
 		bool	mHasStarted, mComplete;
+		bool	mInfinite;
 		bool	mLoop;
 		bool	mUseAbsoluteTime;
 		bool	mAutoRemove;

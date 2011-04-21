@@ -139,6 +139,21 @@ TimelineItemRef Timeline::find( void *target )
 	return TimelineItemRef(); // failed returns null tween
 }
 
+TimelineItemRef Timeline::findLast( void *target )
+{
+	s_iter result = mItems.end();
+	for( s_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
+		if( (*iter)->getTarget() == target ) {
+			if( result == mItems.end() )
+				result = iter;
+			else if( (*iter)->getStartTime() > (*result)->getStartTime() )
+				result = iter;
+		}
+	}
+	
+	return (result == mItems.end() ) ? TimelineItemRef() : *result;
+}
+
 void Timeline::remove( TimelineItemRef action )
 {
 	s_iter iter = std::find( mItems.begin(), mItems.end(), action );

@@ -31,13 +31,13 @@ namespace cinder {
 
 TimelineItem::TimelineItem( class Timeline *parent )
 	: mParent( parent ), mTarget( 0 ), mStartTime( 0 ), mDuration( 0 ), mInvDuration( 0 ), mHasStarted( false ),
-		mComplete( false ), mAutoRemove( true ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
+		mComplete( false ), mAutoRemove( true ), mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
 {
 }
 
 TimelineItem::TimelineItem( Timeline *parent, void *target, float startTime, float duration )
 	: mParent( parent ), mTarget( target ), mStartTime( startTime ), mDuration( duration ), mInvDuration( duration == 0 ? 0 : (1 / duration) ), mHasStarted( false ),
-		mComplete( false ), mAutoRemove( true ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
+		mComplete( false ), mAutoRemove( true ), mInfinite( false ), mLoop( false ), mLastLoopIteration( -1 ), mUseAbsoluteTime( false )
 {
 }
 
@@ -83,7 +83,7 @@ void TimelineItem::stepTo( float newTime )
 		else
 			update( time );
 	}
-	if( newTime >= mStartTime + mDuration && ( ! mLoop ) ) {
+	if( newTime >= mStartTime + mDuration && ( ! mLoop ) && ( ! mInfinite ) ) {
 		mComplete = true;
 		complete();
 	}

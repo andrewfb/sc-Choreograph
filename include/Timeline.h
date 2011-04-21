@@ -40,7 +40,8 @@ class Timeline : public TimelineItem {
   public:
 	Timeline();			
 
-	static TimelineRef	create() { return std::shared_ptr<Timeline>( new Timeline() ); }
+	//! Creates a new timeline, defaulted to infinite
+	static TimelineRef	create() { TimelineRef result( new Timeline() ); result->setInfinite( true ); return result; }
 
 	//! advance time a specified amount
 	void	step( float timestep );
@@ -97,7 +98,7 @@ class Timeline : public TimelineItem {
 		return newTween;
 	}
 
-	//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration or the current time, whichever is greater
+	//! Creates a new tween and adds it to the end of a timeline, setting its start time to the timeline's duration or the current time, whichever is greater
 	template<typename T>
 	TweenRef<T> append( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
 		TweenRef<T> newTween( new Tween<T>( target, endValue, std::max( getDuration(), mCurrentTime ), duration, easeFunction, lerpFunction ) );
@@ -106,10 +107,36 @@ class Timeline : public TimelineItem {
 		return newTween;
 	}
 	
-	//! Creates a new tween and adds it to the end of a timeline, settings its start time to the timeline's duration or the current time, whichever is greater
+	//! Creates a new tween and adds it to the end of a timeline, setting its start time to the timeline's duration or the current time, whichever is greater
 	template<typename T>
 	TweenRef<T> append( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
 		TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, std::max( getDuration(), mCurrentTime ), duration, easeFunction, lerpFunction ) );
+		newTween->setAutoRemove( mDefaultAutoRemove );
+		insert( newTween );
+		return newTween;
+	}
+
+	//! Creates a new tween and adds it to the end of the last tween whose target matches \a target. The new tween's start time is set to the previous tween's end time or the current time if no existing tween matches the target, whichever is greater
+	template<typename T>
+	TweenRef<T> appendTarget( T *target, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
+		float startTime = mCurrentTime;
+		TimelineItemRef last = findLast( target );
+		if( last )
+			startTime = last->getEndTime();
+		TweenRef<T> newTween( new Tween<T>( target, endValue, std::max( mCurrentTime, startTime ), duration, easeFunction, lerpFunction ) );
+		newTween->setAutoRemove( mDefaultAutoRemove );
+		insert( newTween );
+		return newTween;
+	}
+	
+	//! Creates a new tween and adds it to the end of the last tween whose target matches \a target. The new tween's start time is set to the previous tween's end time or the current time, whichever is greater
+	template<typename T>
+	TweenRef<T> appendTarget( T *target, T startValue, T endValue, float duration, EaseFn easeFunction = easeNone, typename Tween<T>::LerpFn lerpFunction = &tweenLerp<T> ) {
+		float startTime = mCurrentTime;
+		TimelineItemRef last = findLast( target );
+		if( last )
+			startTime = last->getEndTime();
+		TweenRef<T> newTween( new Tween<T>( target, startValue, endValue, std::max( mCurrentTime, startTime ), duration, easeFunction, lerpFunction ) );
 		newTween->setAutoRemove( mDefaultAutoRemove );
 		insert( newTween );
 		return newTween;
@@ -132,6 +159,8 @@ class Timeline : public TimelineItem {
 	size_t				getNumItems() const { return mItems.size(); }
 	//! Returns the first item in the timeline the target of which matches \a target
 	TimelineItemRef		find( void *target );
+	//! Returns the latest-starting item in the timeline the target of which matches \a target
+	TimelineItemRef		findLast( void *target );
 	//! Removes the TimelineItem \a item from the Timeline
 	void				remove( TimelineItemRef item );
 	
