@@ -16,6 +16,7 @@
 #include "cinder/Rand.h"
 #include "Choreograph.h"
 #include "AccordionItem.h"
+#include <string>
 #include <list>
 #include <vector>
 
@@ -40,8 +41,6 @@ class ImageAccordionApp : public AppBasic {
 	float			mItemRelaxedWidth;
 	float			mItemHeight;
 	
-	vector<gl::Texture>				mImages;
-	
 	list<AccordionItem>				mItems;
 	list<AccordionItem>::iterator	mCurrentSelection;
 };
@@ -65,21 +64,87 @@ void ImageAccordionApp::setup()
 	mItemRelaxedWidth = 848/mTotalItems;
 	mItemHeight = 564;
 	
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_1 ) ) ) );
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_2 ) ) ) );
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_3 ) ) ) );
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_4 ) ) ) );
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_5 ) ) ) );
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_6 ) ) ) );
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_7 ) ) ) );
-	mImages.push_back( gl::Texture( loadImage( loadResource( IMAGE_8 ) ) ) );
-	
 	float xPos = 0;
 	
-	for( int m = 0; m < mTotalItems; ++m ) {
-		mItems.push_back( AccordionItem( &mTimeline, xPos, 0, mItemHeight, mItemRelaxedWidth, mItemExpandedWidth, mImages[m] ) );
-		xPos += mItemRelaxedWidth;
-	}
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_1 ) ) ),
+									string("Disney World at Sunset"),
+									string("© Trey Ratcliff") ) );
+	xPos += mItemRelaxedWidth;
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_2 ) ) ),
+									string("Lost Hindu Temple in the Jungle Mist"),
+									string("© Trey Ratcliff") ) );
+	xPos += mItemRelaxedWidth;
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_3 ) ) ),
+									string("Icelandic Horse in the Wild"),
+									string("© Trey Ratcliff") ) );
+	xPos += mItemRelaxedWidth;
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_4 ) ) ),
+									string("Taj Mahal"),
+									string("© Trey Ratcliff") ) );
+	xPos += mItemRelaxedWidth;
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_5 ) ) ),
+									string("The Li River"),
+									string("© Trey Ratcliff") ) );
+	xPos += mItemRelaxedWidth;
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_6 ) ) ),
+									string("The End of the World"),
+									string("© Trey Ratcliff") ) );
+	xPos += mItemRelaxedWidth;
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_7 ) ) ),
+									string("Fourth on Lake Austin"),
+									string("© Trey Ratcliff") ) );
+	xPos += mItemRelaxedWidth;
+	mItems.push_back( AccordionItem( &mTimeline, 
+									xPos, 
+									0, 
+									mItemHeight, 
+									mItemRelaxedWidth,
+									mItemExpandedWidth, 
+									gl::Texture( loadImage( loadResource( IMAGE_8 ) ) ),
+									string("The Open Road"),
+									string("© Trey Ratcliff") ) );
 	
 	// similar to mCurrentSelection = null;
 	mCurrentSelection = mItems.end();
@@ -107,16 +172,16 @@ void ImageAccordionApp::mouseMove( MouseEvent event )
 		
 		if (mCurrentSelection == mItems.end()) {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
-				itemIt->animRelax(xPos, mItemRelaxedWidth);
+				itemIt->animTo(xPos, mItemRelaxedWidth);
 				xPos += mItemRelaxedWidth;
 			}
 		} else {
 			for( list<AccordionItem>::iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 				if( itemIt == mCurrentSelection ) {
-					itemIt->animExpand(xPos, mItemExpandedWidth);
+					itemIt->animTo(xPos, mItemExpandedWidth, true);
 					xPos += mItemExpandedWidth;
 				} else {
-					itemIt->animContract(xPos, contractedWidth);
+					itemIt->animTo(xPos, contractedWidth);
 					xPos += contractedWidth;
 				}
 			}

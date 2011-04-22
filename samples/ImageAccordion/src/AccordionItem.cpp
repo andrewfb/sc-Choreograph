@@ -19,14 +19,16 @@
 #include "cinder/Text.h"
 #include "cinder/app/AppBasic.h"
 #include "cinder/CinderMath.h"
+#include <string>
 #include <cmath>
 
 using namespace ci;
+using namespace std;
 
 AccordionItem::AccordionItem() {}
 
-AccordionItem::AccordionItem( Timeline *timeline, float x, float y, float height, float contractedWidth, float expandedWidth, gl::Texture image ) 
-	: mTimeline(timeline), mX(x), mY(y), mWidth(contractedWidth), mHeight(height), mExpandedWidth(expandedWidth), mImage(image)
+AccordionItem::AccordionItem( Timeline *timeline, float x, float y, float height, float contractedWidth, float expandedWidth, gl::Texture image, string title, string subtitle ) 
+	: mTimeline(timeline), mX(x), mY(y), mWidth(contractedWidth), mHeight(height), mExpandedWidth(expandedWidth), mImage(image), mTitle(title), mSubtitle(subtitle)
 {
 #if defined( CINDER_COCOA_TOUCH )
 	std::string normalFont( "Arial" );
@@ -45,9 +47,9 @@ AccordionItem::AccordionItem( Timeline *timeline, float x, float y, float height
 	layout.clear( ColorA( 0.6f, 0.6f, 0.6f, 0.0f ) );
 	layout.setFont( Font( boldFont, 26 ) );
 	layout.setColor( Color( 1, 1, 1 ) );
-	layout.addLine( "Image Title" );
+	layout.addLine( mTitle );
 	layout.setFont( Font( normalFont, 16 ) );
-	layout.addLine( "Image subtitle" );
+	layout.addLine( mSubtitle );
 	layout.setBorder(11, 6);
 	mText = gl::Texture( layout.render( true ) );
 	
@@ -65,31 +67,13 @@ bool AccordionItem::isPointIn( const Vec2f &pt )
 }
 
 
-void AccordionItem::animExpand ( float newX, float newWidth )
-{
-	mTimeline->apply( &mTextAlpha, 1.0f, mAnimDuration*0.3f, EaseNone() );
-	animTo(newX, newWidth);
-}
-
-
-void AccordionItem::animContract ( float newX, float newWidth )
-{
-	mTimeline->apply( &mTextAlpha, 0.0f, mAnimDuration*0.3f, EaseNone() );
-	animTo(newX, newWidth);
-}
-
-
-void AccordionItem::animRelax ( float newX, float newWidth )
-{
-	mTimeline->apply( &mTextAlpha, 0.0f, mAnimDuration*0.3f, EaseNone() );
-	animTo(newX, newWidth);
-}
-
-
-void AccordionItem::animTo ( float newX, float newWidth )
+void AccordionItem::animTo ( float newX, float newWidth, bool revealText )
 {
 	mTimeline->apply( &mX, newX, mAnimDuration, mAnimEase );
 	mTimeline->apply( &mWidth, newWidth, mAnimDuration, mAnimEase );
+	
+	if (revealText) mTimeline->apply( &mTextAlpha, 1.0f, mAnimDuration*0.3f, EaseNone() );
+	else mTimeline->apply( &mTextAlpha, 0.0f, mAnimDuration*0.3f, EaseNone() );
 }
 
 

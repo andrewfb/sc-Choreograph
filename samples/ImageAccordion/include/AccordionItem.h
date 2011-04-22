@@ -8,39 +8,34 @@
 #include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
+#include <string>
 #include <vector>
 
 using namespace ci;
 using namespace gl;
+using namespace std;
 
 class AccordionItem {
 public:
 	
 	AccordionItem();
-	AccordionItem( Timeline *timeline, float x, float y, float height, float contractedWidth, float expandedHeight, Texture image );
+	AccordionItem( Timeline *timeline, float x, float y, float height, float contractedWidth, float expandedHeight, Texture image, string title, string subtitle );
 	void update();
 	void draw();
 	
 	bool isPointIn( const Vec2f &pt );
-	void animExpand ( float newX, float newWidth );
-	void animContract ( float newX, float newWidth );
-	void animRelax ( float newX, float newWidth );
-	void animTo ( float newX, float newWidth );
+	void animTo ( float newX, float newWidth, bool revealText = false );
 	float round( float n );
 	
 	float mX, mY, mWidth, mHeight, mExpandedWidth, mTextAlpha;
 	
-	Rectf mImageRect;
-	Rectf mTextRect;
+	string mTitle, mSubtitle;
 	
-	Texture mImage;
-	Texture mText;
+	Texture mImage, mText;
+	Rectf mImageRect, mTextRect;
+	Area    mImageArea,  mTextArea;
 	
-	Area    mImageArea;
-	Area    mTextArea;
-	
-	Timeline *mTimeline;
-	
+	Timeline		*mTimeline;
 	float			mAnimDuration;
 	EaseFn			mAnimEase;
 };
